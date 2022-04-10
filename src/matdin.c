@@ -1,4 +1,4 @@
-#include "f.h"
+#include "matdin.h"
 
 
 void libertaMat(char** p, int nLin){

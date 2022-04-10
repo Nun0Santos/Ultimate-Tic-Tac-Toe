@@ -23,4 +23,4 @@ void setPos(char **p, int x, int y, char c);
 // Obtém o caracter armazenado na posição (x, y) de uma matriz de caracteres
 char getPos(char **p, int x, int y);
 
-#endif /*  
+#endif  

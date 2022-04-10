@@ -1,11 +1,8 @@
 // Trabalho Pratico Programacao - LEI
 // DEIS-ISEC 2020-2021
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "utils.h"
+#include "globals.h"
 
 void initRandom(){
     srand(time(NULL));
@@ -21,7 +18,7 @@ int probEvento(float prob){
 
 
 // Função main () com alguns exemplos simples de utilizacao das funcoes
-int main(){
+/*int main(){
 
   int i;
 
@@ -36,4 +33,4 @@ int main(){
         printf("%d\n", probEvento(0.25));
 
     return 0;
-}
+}*/
