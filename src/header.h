@@ -1,5 +1,4 @@
-#include "globals.h"
+#include "game.h"
 
-void welcome();
 char menu();
 void initializer();

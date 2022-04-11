@@ -1,12 +1,14 @@
 #include "globals.h"
 #include "game.h"
 
-void game(){
+
+void game(bool gameMode){
+   Board *board;
+
+   board = boardsInitializer();
+   boardPrint(3,3,board);
+
 
 
 }
 
-int winner(Board b){
-
-    
-}

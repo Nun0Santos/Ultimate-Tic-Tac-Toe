@@ -1,4 +1,8 @@
+#include "globals.h"
+#include "board.h"
 
+#define BOT_GAME 1
+#define TWO_PLAYERS 0
 
-void game();
-int winner(Board b);
+void game(bool gameMode);
+void rules();

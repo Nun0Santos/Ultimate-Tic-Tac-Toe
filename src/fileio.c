@@ -1,7 +1,8 @@
+#include "globals.h"
 #include "header.h"
 
+
 char menu(){
-    welcome();
     char op;
 
     printf("Choose one option:\n");
@@ -22,6 +23,7 @@ char menu(){
 
 void initializer(){
     int tmp=0;
+    bool gameMode;
     char op = 'N';
     FILE *fp;
    
@@ -37,8 +39,13 @@ void initializer(){
         }while(op != 'Y' && op != 'N');
     }  
     if(op == 'Y'){
-        fread(&tmp,sizeof(int),1,fp);
+        fread(&gameMode,sizeof(bool),1,fp);
         fclose(fp);
+        if(gameMode == BOT_GAME)
+            game(gameMode); //Computador (Resumir)
+        else
+            game(gameMode); //2 Players (Resumir)
+
     }
     else{//Option == N
        //fclose(fp);
@@ -47,17 +54,13 @@ void initializer(){
     if(op == 'N'){
         op = menu();
         do{
-            if(op == '1'){
-            //2 jogadores
-            }
-            if(op == '2'){
-            //Computer
-            }
-            if(op == '3'){
-            //rules     
-            }
-
+            if(op == '1')//2 jogadores
+                game(TWO_PLAYERS);
+            if(op == '2')//Computer
+                game(BOT_GAME);
+            if(op == '3')//rules 
+                //rules();
+                printf("test");
         }while(op == '3');
-
     }
 }
