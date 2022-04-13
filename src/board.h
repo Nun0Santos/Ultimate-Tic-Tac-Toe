@@ -11,4 +11,5 @@ void verifyWinner(Board board);
 void freeBoards(Board *board);
 
 
+void choosePlays(Board *board, int jogador);
 

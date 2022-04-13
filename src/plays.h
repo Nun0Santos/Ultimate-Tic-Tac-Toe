@@ -8,6 +8,7 @@ typedef struct Plays{
     struct Plays *prox;
 }Plays;
 
-//adicionar
-//listar
-//libertar
+
+
+//Todas as funcoes referentes à lista ligada (jogadas)
+
