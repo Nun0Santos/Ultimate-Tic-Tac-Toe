@@ -7,9 +7,7 @@ typedef struct Board{
 
 Board *boardsInitializer();
 void boardPrint(Board *board);
-void verifyWinner(Board board);
-void freeBoards(Board *board);
-
-
+int verifyWinner(Board *board);
 void choosePlays(Board *board, int jogador);
 
+void freeBoards(Board *board);

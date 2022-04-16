@@ -71,18 +71,41 @@ void boardPrint(Board *board){
    printf("  +------------------------+\n");
 }
 
-void verifyWinner(Board board){
-    
+int verifyWinner(Board *board){
+    int i, j;
+
+	for(i=0; i<3; i++)
+		if(board[0].section[i][0] != '_'){
+			for(j=0; j<2 && board[0].section[i][j] == board[0].section[i][j+1]; j++)
+				;
+			if(j==2)
+				return 1;
+		}
+	return 0;
 
 }
+
+
+void choosePlays(Board *board, int jogador){
+    int pos;
+
+	printf("\nÉ a vez do jogador %d\n", jogador);
+	do{
+		printf("Posição: ");
+		scanf(" %d", &pos);
+	}while(pos<1 || pos>9 || board[0].section[(pos-1)/3][(pos-1)%3] != '_');
+
+    
+	if(jogador == 1)
+			board[0].section[(pos-1)/3][(pos-1)%3] = 'X';
+		else
+			board[0].section[(pos-1)/3][(pos-1)%3] = 'O';
+
+}
+
 void freeBoards(Board *board){
     for(int i = 0; i < 10; i++){
         free(board[i].section);
     }
     free(board);
 }
-
-void choosePlays(Board *board, int jogador){
-
-}
-

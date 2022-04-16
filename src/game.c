@@ -8,7 +8,7 @@ void game(bool gameMode){
    char globalBoard[3][3];
    Plays *plays;
    char playerNameOne[25], playerNameTwo[25];
-   int joga=1,nJogadas=0;
+   int joga=1,nPlays=0,won=0;
 
    printf("First player name: ");
    //fgets(playerNameOne,sizeof(playerNameOne),stdin);
@@ -24,8 +24,19 @@ void game(bool gameMode){
    do{
       boardPrint(atualBoard);
       choosePlays(atualBoard,joga);
+      ++nPlays;
 
-   }while (nJogadas < 9);
+      if(verifyWinner(atualBoard) == 1){
+         won=joga;
+      }
+      else{
+         joga=joga%2 + 1;
+         
+      }
+
+
+
+   }while (won == 0 && nPlays < 9);
    
    boardPrint(atualBoard);
 
