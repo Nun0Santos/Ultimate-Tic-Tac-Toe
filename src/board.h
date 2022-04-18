@@ -1,3 +1,4 @@
+#include "plays.h"
 
 typedef struct Board{
     char **section;
@@ -7,7 +8,7 @@ typedef struct Board{
 
 Board *boardsInitializer();
 void boardPrint(Board *board);
-int verifyWinner(Board *board);
-void choosePlays(Board *board, int jogador);
+int verifyWinner(Board *board, int nBoard);
+int choosePlays(Board *board, Plays *plays, int jogador, int nBoard);
 
 void freeBoards(Board *board);
