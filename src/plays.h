@@ -1,15 +1,17 @@
 
-typedef struct Plays{
+typedef struct Plays Plays, *pPlays;
+struct Plays{
     int player;
     int x;
     int y;
-    int xBoard;
-    int yBoard;
     int Board;
-    struct Plays *prox;
-}Plays;
+    pPlays prox;
 
-
+    //struct Plays *prox;
+    /* int xBoard;
+    int yBoard;*/
+};
 
 //Todas as funcoes referentes à lista ligada (jogadas)
-int showPlays(Plays *plays, int jogador);
+void showPlays(pPlays plays);
+pPlays addNodePlays(pPlays plays, int board, int x, int y);

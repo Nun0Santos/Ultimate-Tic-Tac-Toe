@@ -72,8 +72,8 @@ void boardPrint(Board *board){
 }
 
 int verifyWinner(Board *board,int nBoard){
-    int i,j;
-	for(i=0; i<3; i++)
+    //int i,j;
+	/*for(i=0; i<3; i++)
 		if(board[nBoard].section[i][0] != '_'){
 			for(j=0; j<2; j++);
 			    if(board[nBoard].section[i][j] == board[nBoard].section[i][j+1]){
@@ -81,32 +81,70 @@ int verifyWinner(Board *board,int nBoard){
 				        return 1;
                 }           
 		}
+	return 0;*/
+    int i, j;
+
+	for(i=0; i<3; i++)
+		if(board[nBoard].section[i][0] != '_'){
+			for(j=0; j<3-1 && board[nBoard].section[i][j] == board[nBoard].section[i][j+1]; j++)
+				;
+			if(j==3-1)
+				return 1;
+		}
 	return 0;
 }
 
-
-int choosePlays(Board *board, Plays *plays, int jogador, int nBoard){
-    int pos;
-
-	printf("\nÉ a vez do jogador %d\n", jogador);
-	do{
-		printf("Posição: ");
-		scanf(" %d", &pos);
-        //add nó
-    
-	}while(pos<1 || pos>9 || board[nBoard].section[(pos-1)/3][(pos-1)%3] != '_');
-
-    
-	if(jogador == 1)
-			board[nBoard].section[(pos-1)/3][(pos-1)%3] = 'X';
-           // board[nBoard].section[x][y] = 'X';
-
-		else
-			board[nBoard].section[(pos-1)/3][(pos-1)%3] = 'O';
-
-    return pos;
+int convertPosition(int position, int *x, int *y){
+    switch (position)
+    {
+    case 0:
+        *x=0; *y=0;
+        break;
+    case 1:
+        *x=0; *y=1;
+        break;
+    case 2:
+        *x=0; *y=2;
+        break;
+    case 3:
+        *x=1; *y=0;
+        break;
+    case 4:
+        *x=1; *y=1;
+        break;
+    case 5:
+        *x=1; *y=2;
+        break;
+    case 6:
+        *x=2; *y=0;
+        break;
+     case 7:
+        *x=2; *y=1;
+        break;
+    case 8:
+        *x=2; *y=2;
+        break;
+    default:
+        return 1;
+        break;
+        
+    }
+    return 0;
 }
-
+void winnerSection(Board *board, int nBoard,int jogador){
+    int i,j;
+    
+        if(jogador == 1){
+            for(i=1; i<2; i++)
+                for(j=0; j<3; j++)
+                    board[nBoard].section[i][j] = 'Wj1';
+        }
+        if(jogador == 2){
+            for(i=1; i<2; i++)
+                for(j=0; j<3; j++)
+                    board[nBoard].section[i][j] = 'Wj2';
+        }        
+}
 void freeBoards(Board *board){
     for(int i = 0; i < 10; i++){
         free(board[i].section);
