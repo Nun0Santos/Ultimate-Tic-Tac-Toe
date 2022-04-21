@@ -2,8 +2,9 @@
 #include "header.h"
 
 
-char menu(){
-    char op;
+int menu(){
+    char opStr[255];
+    int op;
 
     printf("Choose one option:\n");
     printf("\t1-Play against person\n"
@@ -12,55 +13,61 @@ char menu(){
                  "\t4-Exit\n");
     do{
         printf("Option: ");
-        scanf(" %c",&op);
-        //fgets(&op,sizeof(op),stdin);
-        if(op != '1' && op != '2' && op != '3' && op != '4'){
+        fgets(opStr,sizeof(opStr),stdin);
+        op = atoi(opStr);
+
+        if(op != 1 && op != 2 && op != 3 && op != 4){
             printf("Please enter a valid input [1-4]\n");
         }
-    }while(op != '1' && op != '2' && op != '3' && op != '4');  
+
+    }while(op != 1 && op != 2 && op != 3 && op != 4);  
+
     return op;
 }
 
 void initializer(){
-    int tmp=0;
+    int tmp=0,op;
     bool gameMode;
-    char op = 'N';
+    char opStr = 'N';
     FILE *fp;
    
     //Verify if we have to load the jogo.bin
-    if( (fp = fopen("jogo.bin","rb") ) != NULL){
+    if( (fp = fopen("jogo.txt","rt") ) != NULL){
         printf("A jogo.bin file with valid data has bin found, do you wish to load the previous game?(Y/N)");
+        
         do{
             printf("Option: ");
-            scanf(" %c",&op);
-            if( op != 'Y' && op != 'N'){
+            fgets(&opStr,sizeof(opStr),stdin);
+          
+            if( opStr != 'Y' && opStr != 'N'){
                 printf("Please enter a valid input: Y(Yes) or N(No)\n");
             }
-        }while(op != 'Y' && op != 'N');
+
+        }while(opStr != 'Y' && opStr != 'N');
     }  
-    if(op == 'Y'){
+    if(opStr == 'Y'){
         fread(&gameMode,sizeof(bool),1,fp);
         fclose(fp);
+
         if(gameMode == BOT_GAME)
             game(gameMode); //Computador (Resumir)
         else
             game(gameMode); //2 Players (Resumir)
-
     }
     else{//Option == N
        //fclose(fp);
-
     }
-    if(op == 'N'){
+    
+    if(opStr == 'N'){
         op = menu();
+
         do{
-            if(op == '1')//2 jogadores
+            if(op == 1)//2 jogadores
                 game(TWO_PLAYERS);
-            if(op == '2')//Computer
+            if(op == 2)//Computer
                 game(BOT_GAME);
-            if(op == '3')//rules 
-                //rules();
-                printf("test");
-        }while(op == '3');
+            if(op == 3)//rules 
+                rules();
+        }while(op == 3);
     }
 }
