@@ -1,4 +1,4 @@
 #include "game.h"
 
-char menu();
+int menu();
 void initializer();
