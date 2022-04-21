@@ -8,14 +8,14 @@ void game(int gameMode){
    pPlays plays = NULL;
    char playerName[2][255];
    int joga=1,nPlays=0,won=0,nBoard=0,nBoardBefore=0;
-
+	
    printf("First player name: ");
    fgets(playerName[0],sizeof(playerName[0]),stdin);
    playerName[0][strlen(playerName[0]) - 1] = '\0';
 
    if(gameMode == 1){ //BOT_GAME
 
-      printf("Computer Plays\n");
+      printf("\nComputer Plays\n");
       strcpy(playerName[1],"Computer");
 
       do{
@@ -77,16 +77,17 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
    int pos,x,y,res;
    char poss[255];
    *nBoardBefore = nBoard;
- 
+
+   printf("\nCurrent board: [%d]",nBoard);
    if(jogador == 1){
-      printf("\n%s:\n",namePlayers[0]);
+      printf("\n%s plays:\n",namePlayers[0]);
    }
    else{
-      printf("\n%s:\n",namePlayers[1]);
+      printf("\n%s plays:\n",namePlayers[1]);
    }
 
 	do{
-		printf("Posição: ");
+		printf("Position: ");
       fgets(poss,sizeof(pos),stdin);
       pos = atoi(poss);
 
@@ -114,12 +115,12 @@ int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBef
    int pos,x,y,res;
    *nBoardBefore = nBoard; 
 
-	printf("\nComputer:\n");
+	printf("\nComputer plays:\n");
 	do{
 
 		pos = intUniformRnd(0,8);
       res = convertPosition(pos, &x,&y);
-      printf("pos=%d\n",pos);
+     
 
       /*addNodePlays(plays,nBoard,x,y);
       showPlays(plays);*/
