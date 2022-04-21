@@ -7,7 +7,6 @@
 
 void game(int gameMode);
 void PLays();
-int choosePlays(Board *board, Plays *plays, int jogador, int nBoard, int *mode);
-int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *mode);
-
+int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255], int nBoard, int *nBoardBefore, int *mode);
+int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBefore, int *mode);
 void rules();

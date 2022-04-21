@@ -6,69 +6,98 @@ void game(int gameMode){
    atualBoard = boardsInitializer();
    char globalBoard[3][3];
    pPlays plays = NULL;
-   char playerNameOne[25], playerNameTwo[25];
-   int joga=1,nPlays=0,won=0,nBoard=0;
+   char playerName[2][255];
+   int joga=1,nPlays=0,won=0,nBoard=0,nBoardBefore=0;
 
    printf("First player name: ");
-   //fgets(playerNameOne,sizeof(playerNameOne),stdin);
-   scanf("%s",playerNameOne);
+   fgets(playerName[0],sizeof(playerName[0]),stdin);
+   playerName[0][strlen(playerName[0]) - 1] = '\0';
+
    if(gameMode == 1){ //BOT_GAME
+
       printf("Computer Plays\n");
-      strcpy(playerNameTwo,"Computer");
+      strcpy(playerName[1],"Computer");
+
       do{
          boardPrint(atualBoard);
-         nBoard=botPlays(atualBoard,plays,joga,nBoard, &gameMode);
-         ++nPlays;
+         nBoard=botPlays(atualBoard,plays,joga,nBoard,&nBoardBefore,&gameMode);
          boardPrint(atualBoard);
-         if(verifyWinner(atualBoard,nBoard) == 1){
-            //won=joga;
-            printf("ganhou o jogador : %s\n",playerNameTwo);
-            joga=2;
-             winnerSection(atualBoard,nBoard,joga);
+         ++nPlays;
+
+         if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //bot win
+            //winnerSection(atualBoard,nBoard,joga);
+            won=joga;
          }
-         else{
-            nBoard=choosePlays(atualBoard,plays,joga,nBoard, &gameMode);   
-            if(verifyWinner(atualBoard,nBoard) == 1){
-               winnerSection(atualBoard,nBoard,joga);
-               //won=joga;
-               printf("ganhou o jogador : %s\n",playerNameOne);
+         else{ 
+            nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
+            ++nPlays;
+            if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //Human win
+               //winnerSection(atualBoard,nBoard,joga);
                joga = 1;
-               winnerSection(atualBoard,nBoard,joga);
+               won=joga;
             }         
          }
-      }while (won == 0 && nPlays < 9*8);         
+      }while (won == 0 && nPlays < 9*8);
+
       boardPrint(atualBoard);
-   
+
+      if(joga == 1)
+         printf("%s won!\n",playerName[0]);
+      else
+         printf("%s won!\n",playerName[1]);
+
    }else{ //TWO_PLAYERS
+
       printf("Second player name: ");
-      //fgets(playerNameTwo,sizeof(playerNameTwo),stdin);
-      scanf("%s",playerNameTwo);
+      fgets(playerName[1],sizeof(playerName[1]),stdin);
+      playerName[1][strlen(playerName[1]) - 1] = '\0';
       do{
          boardPrint(atualBoard);
-         nBoard=choosePlays(atualBoard,plays,joga,nBoard, &gameMode);   
+         nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
          ++nPlays;
-         if(verifyWinner(atualBoard,nBoard) == 1){
-         won=joga;
+
+         if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
+            //winnerSection(atualBoard,nBoard,joga);
+            won=joga;
+      }else{
+            joga=joga%2 + 1;
       }
-      else{
-         joga=joga%2 + 1;
-      }
-   }while (won == 0 && nPlays < 9*8);         
+   }while (won == 0 && nPlays < 9*8); 
+
    boardPrint(atualBoard);
+
+   if(joga == 1)
+      printf("%s won!\n",playerName[0]);
+   else
+      printf("%s won!\n",playerName[1]);
    }
 }
 
-int choosePlays(Board *board, Plays *plays, int jogador, int nBoard, int *mode){
-    int pos,x,y,res;
-    
-	printf("\nÉ a vez do jogador %d\n", jogador);
+int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode){
+   int pos,x,y,res;
+   char poss[255];
+   *nBoardBefore = nBoard;
+ 
+   if(jogador == 1){
+      printf("\n%s:\n",namePlayers[0]);
+   }
+   else{
+      printf("\n%s:\n",namePlayers[1]);
+   }
+
 	do{
 		printf("Posição: ");
-		scanf(" %d", &pos);
+      fgets(poss,sizeof(pos),stdin);
+      pos = atoi(poss);
 
+      if(pos < 0 || pos > 8){
+         printf("Please enter a valid input [0-9]\n");
+      }
+      pos = atoi(poss);
       res = convertPosition(pos, &x,&y);
-      addNodePlays(plays,nBoard,x,y);
-      showPlays(plays);
+
+      /*addNodePlays(plays,nBoard,x,y);
+      showPlays(plays);*/
 
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 );
 	
@@ -77,25 +106,33 @@ int choosePlays(Board *board, Plays *plays, int jogador, int nBoard, int *mode){
 		else
             setPos(board[nBoard].section,x,y,'O');
    *mode = 1;
+
    return pos;
 }
 
-int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *mode){
+int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBefore, int *mode){
    int pos,x,y,res;
-    
+   *nBoardBefore = nBoard; 
+
 	printf("\nComputer:\n");
 	do{
-		pos =intUniformRnd(0,8);
+
+		pos = intUniformRnd(0,8);
       res = convertPosition(pos, &x,&y);
       printf("pos=%d\n",pos);
-      addNodePlays(plays,nBoard,x,y);
-      showPlays(plays);
 
-	}while(board[nBoard].section[x][y] != '_' || x < 0 || y > 9 );
+      /*addNodePlays(plays,nBoard,x,y);
+      showPlays(plays);*/
+
+	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 );
 
    setPos(board[nBoard].section,x,y,'O');
    *mode = 0;
+
    return pos;
 }
 
+void rules(){
+   printf("test\n");
+}
 
