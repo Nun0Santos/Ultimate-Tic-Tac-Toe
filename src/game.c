@@ -107,7 +107,7 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
             setPos(board[nBoard].section,x,y,'X');
 		else
             setPos(board[nBoard].section,x,y,'O');
-   *mode = 1;
+   *mode = 1;ghj
 
    return pos;
 }
