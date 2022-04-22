@@ -207,12 +207,15 @@ void winnerSection(Board *board, int nBoard,int jogador){
     int i,j;
     
         if(jogador == 1){
-            for(i=1; i<2; i++)
+            for(i=0; i<3; i++)
                 for(j=0; j<3; j++)
-                    board[nBoard].section[i][j] = 'X';
+                    board[nBoard].section[i][j] = ' ';
         }
+        board[nBoard].section[1][1] = 87;
+        board[nBoard].section[1][2] = 49;
+
         if(jogador == 2){
-            for(i=1; i<2; i++)
+            for(i=0; i<2; i++)
                 for(j=0; j<3; j++)
                     board[nBoard].section[i][j] = 'O';
         }        

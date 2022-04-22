@@ -57,8 +57,9 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
-            //winnerSection(atualBoard,nBoard,joga);
+            winnerSection(atualBoard,nBoardBefore,joga);
             won=joga;
+         
       }else{
             joga=joga%2 + 1;
       }
@@ -100,7 +101,7 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
       /*addNodePlays(plays,nBoard,x,y);
       showPlays(plays);*/
 
-	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 );
+	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9);
 	
    if(jogador == 1)
             setPos(board[nBoard].section,x,y,'X');
