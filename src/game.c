@@ -25,7 +25,7 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //bot win
-            //winnerSection(atualBoard,nBoard,joga);
+            //winnerSection(atualBoard,nBoard,joga, playerName);
             won=joga;
          }
          else{ 
@@ -57,7 +57,7 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
-            winnerSection(atualBoard,nBoardBefore,joga);
+            //winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             won=joga;
          
       }else{
@@ -107,7 +107,7 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
             setPos(board[nBoard].section,x,y,'X');
 		else
             setPos(board[nBoard].section,x,y,'O');
-   *mode = 1;ghj
+   *mode = 1;
 
    return pos;
 }

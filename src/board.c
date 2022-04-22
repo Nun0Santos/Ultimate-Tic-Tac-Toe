@@ -124,14 +124,14 @@ int diag(Board *board, int nBoard)
     }
 }
 
-/*int verifyWinner(Board *board,int nBoard){
+int verifyWinner(char board[3][3]){
     int i=0,j=0;
     int line = 1;
 
      //Test Lines:
     for (i = 0; i < 3; i++){
         for (j = 1; j < 3; j++){
-            if(board[nBoard].section[i][j] == board[nBoard].section[i][j-1] && board[nBoard].section[i][j]!='_'){
+            if(board[i][j] == board[i][j-1] && board[i][j]!= '_'){
                 line++;
             }
         }
@@ -140,7 +140,7 @@ int diag(Board *board, int nBoard)
         line=1;
     }
     //Test Columns:
-    for (i = 0; i < 3; i++){
+    /*for (i = 0; i < 3; i++){
         for (j = 1; j <3; j++){
             if(board[nBoard].section[j][i] == board[nBoard].section[j-1][i] && board[nBoard].section[j][i]!='_'){
                 line++;
@@ -163,8 +163,8 @@ int diag(Board *board, int nBoard)
         }
         if (line==3 || j==3)
             return 0;
-    }
-}*/
+    }*/
+}
 
 int convertPosition(int position, int *x, int *y){
     switch (position)
@@ -203,10 +203,11 @@ int convertPosition(int position, int *x, int *y){
     }
     return 0;
 }
-void winnerSection(Board *board, int nBoard,int jogador){
+void winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]){
     int i,j;
-    
-        if(jogador == 1){
+    int x,y,res;
+
+        /*if(jogador == 1){
             for(i=0; i<3; i++)
                 for(j=0; j<3; j++)
                     board[nBoard].section[i][j] = ' ';
@@ -218,8 +219,53 @@ void winnerSection(Board *board, int nBoard,int jogador){
             for(i=0; i<2; i++)
                 for(j=0; j<3; j++)
                     board[nBoard].section[i][j] = 'O';
-        }        
+        }*/
+        convertPositionBoard(nBoard,&x,&y);
+        if(jogador == 1){
+            globalBoard[x][y] = 49;
+            
+        }
+        else{
+            globalBoard[x][y] = 49;
+        }
+        verifyWinner(globalBoard);
+        if(res == 0){
+            printf("won\n");
+        }
+
+
 }
+
+void convertPositionBoard(int pos, int *x, int *y){
+    if(pos == 0){
+        *x=0;*y=0;
+    }
+    if(pos == 1){
+        *x=0;*y=1;
+    }
+    if(pos == 2){
+        *x=0;*y=2;
+    }
+    if(pos == 3){
+        *x=1;*y=0;
+    }
+    if(pos == 4){
+        *x=1;*y=1;
+    }
+    if(pos == 5){
+        *x=1;*y=2;
+    }
+    if(pos == 6){
+        *x=2;*y=0;
+    }
+    if(pos == 7){
+        *x=2;*y=1;
+    }
+    if(pos == 8){
+        *x=2;*y=2;
+    }
+}
+
 void freeBoards(Board *board){
     for(int i = 0; i < 10; i++){
         free(board[i].section);

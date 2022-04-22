@@ -7,10 +7,11 @@ typedef struct Board{
 //Todas as funcoes referentes ao tabuleiro
 Board *boardsInitializer();
 void boardPrint(Board *board);
-//int verifyWinner(Board *board, int nBoard);
+int verifyWinner(char board[3][3]);
 int convertPosition(int position, int *x, int *y);
-void winnerSection(Board *board, int nBoard,int jogador);
+void winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]);
 void freeBoards(Board *board);
 int linha(Board *board, int nBoard);
 int coluna(Board *board, int nBoard);
 int diag(Board *board, int nBoard);
+void convertPositionBoard(int pos, int *x, int *y);
