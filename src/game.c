@@ -7,8 +7,9 @@ void game(int gameMode){
    char globalBoard[3][3];
    pPlays plays = NULL;
    char playerName[2][255];
-   int joga=1,nPlays=0,won=0,nBoard=0,nBoardBefore=0;
-	
+   int joga=1,nPlays=0,won=0,nBoard,nBoardBefore=0,res;
+	nBoard = intUniformRnd(0,8);
+
    printf("First player name: ");
    fgets(playerName[0],sizeof(playerName[0]),stdin);
    playerName[0][strlen(playerName[0]) - 1] = '\0';
@@ -25,14 +26,14 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //bot win
-            //winnerSection(atualBoard,nBoard,joga, playerName);
+            won = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             won=joga;
          }
          else{ 
             nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
             ++nPlays;
             if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //Human win
-               //winnerSection(atualBoard,nBoard,joga);
+               won = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
                joga = 1;
                won=joga;
             }         
@@ -57,13 +58,13 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
-            //winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
-            won=joga;
+            /*winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            won=joga;*/
          
       }else{
             joga=joga%2 + 1;
       }
-   }while (won == 0 && nPlays < 9*8); 
+   }while ( (winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName) ) == 0 && nPlays < 9*9); 
 
    boardPrint(atualBoard);
 
