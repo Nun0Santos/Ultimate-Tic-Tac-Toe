@@ -7,8 +7,10 @@ void game(int gameMode){
    char globalBoard[3][3];
    pPlays plays = NULL;
    char playerName[2][255];
-   int joga=1,nPlays=0,won=0,nBoard,nBoardBefore=0,res,res1=0;
-	nBoard = intUniformRnd(0,8);
+   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0,
+       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
+
+	nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
 
    globalBoardInitializer(globalBoard);
 
@@ -23,24 +25,24 @@ void game(int gameMode){
 
       do{
          boardPrint(atualBoard);
-         nBoard=botPlays(atualBoard,plays,joga,nBoard,&nBoardBefore,&gameMode);
+         nBoard=botPlays(atualBoard,plays,joga,nBoard,&nBoardBefore,&gameMode,&section);
          boardPrint(atualBoard);
          ++nPlays;
 
-         if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //bot win
-            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
-            won=joga;
+         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
+            joga=2;
+            resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            joga=1;
          }
          else{ 
-            nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
+            nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section);   
             ++nPlays;
-            if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //Human win
-            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //Human win
+            resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
                joga = 1;
-               won=joga;
             }         
          }
-      }while (res1 == 0 && nPlays < 9*9);
+      }while (resWinner == 0 && nPlays < 9*9);
 
       boardPrint(atualBoard);
 
@@ -56,39 +58,46 @@ void game(int gameMode){
       playerName[1][strlen(playerName[1]) - 1] = '\0';
       do{
          boardPrint(atualBoard);
-         nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
+         nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section);   
          ++nPlays;
-
-         if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
-            //XOboard(atualBoard,nBoardBefore);
-            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
-            printf("dentro do game %d\n",res1);
-            printf("won %d\n",won);
-            printf("joga %d\n",joga);
-            joga=2;
-            printf("joga depois %d\n",joga);
+         convertPositionBoard(nBoard,&x,&y);
          
+         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){
+            resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            flagWinnerSection = 1;
+            section = nBoardBefore;
+
+            if(joga == 1){
+               joga = 2;
+               printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
+            }
+            else{
+               flagPlayerTwo = 2;
+               joga = 1;
+               printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore); 
+            }         
       }else{
             joga=joga%2 + 1;
             printf("else joga %d\n",joga);
       }
-   }while (res1 == 0 && nPlays < 9*9); 
+   }while (resWinner == 0 && nPlays < 9*9 || nBoard == atualBoard[nBoard].section[x][y]); 
 
    boardPrint(atualBoard);
 
-   if(joga == 1)
+   if(joga == 1 && flagPlayerTwo == 0 )
       printf("%s won!\n",playerName[0]);
    else
       printf("%s won!\n",playerName[1]);
    }
 }
 
-int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode){
+int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section){
    int pos,x,y,res;
    char poss[255];
    *nBoardBefore = nBoard;
-
+   
    printf("\nCurrent board: [%d]",nBoard);
+
    if(jogador == 1){
       printf("\n%s plays:\n",namePlayers[0]);
    }
@@ -106,11 +115,11 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
       }
       pos = atoi(poss);
       res = convertPosition(pos, &x,&y);
-
+      printf("x %d y %d\n",x,y);
       /*addNodePlays(plays,nBoard,x,y);
       showPlays(plays);*/
 
-	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9);
+	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 || pos == board[nBoard].section[x][y]);
 	
    if(jogador == 1)
             setPos(board[nBoard].section,x,y,'X');
@@ -121,21 +130,23 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
    return pos;
 }
 
-int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBefore, int *mode){
+int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section){
    int pos,x,y,res;
    *nBoardBefore = nBoard; 
 
+   printf("\nCurrent board: [%d]",nBoard);
 	printf("\nComputer plays:\n");
 	do{
 
 		pos = intUniformRnd(0,8);
+      printf("Position: %d\n",pos);
       res = convertPosition(pos, &x,&y);
      
 
       /*addNodePlays(plays,nBoard,x,y);
       showPlays(plays);*/
 
-	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 );
+	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 || pos == *section );
 
    setPos(board[nBoard].section,x,y,'O');
    *mode = 0;
