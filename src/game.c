@@ -7,8 +7,10 @@ void game(int gameMode){
    char globalBoard[3][3];
    pPlays plays = NULL;
    char playerName[2][255];
-   int joga=1,nPlays=0,won=0,nBoard,nBoardBefore=0,res;
+   int joga=1,nPlays=0,won=0,nBoard,nBoardBefore=0,res,res1=0;
 	nBoard = intUniformRnd(0,8);
+
+   globalBoardInitializer(globalBoard);
 
    printf("First player name: ");
    fgets(playerName[0],sizeof(playerName[0]),stdin);
@@ -26,19 +28,19 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //bot win
-            won = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             won=joga;
          }
          else{ 
             nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode);   
             ++nPlays;
             if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){ //Human win
-               won = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
                joga = 1;
                won=joga;
             }         
          }
-      }while (won == 0 && nPlays < 9*8);
+      }while (res1 == 0 && nPlays < 9*9);
 
       boardPrint(atualBoard);
 
@@ -58,13 +60,19 @@ void game(int gameMode){
          ++nPlays;
 
          if(linha(atualBoard,nBoardBefore) == 0 || coluna(atualBoard,nBoardBefore) == 0 || diag(atualBoard,nBoardBefore) == 0){
-            /*winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
-            won=joga;*/
+            //XOboard(atualBoard,nBoardBefore);
+            res1 = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            printf("dentro do game %d\n",res1);
+            printf("won %d\n",won);
+            printf("joga %d\n",joga);
+            joga=2;
+            printf("joga depois %d\n",joga);
          
       }else{
             joga=joga%2 + 1;
+            printf("else joga %d\n",joga);
       }
-   }while ( (winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName) ) == 0 && nPlays < 9*9); 
+   }while (res1 == 0 && nPlays < 9*9); 
 
    boardPrint(atualBoard);
 

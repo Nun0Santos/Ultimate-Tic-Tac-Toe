@@ -15,4 +15,5 @@ int linha(Board *board, int nBoard);
 int coluna(Board *board, int nBoard);
 int diag(Board *board, int nBoard);
 void convertPositionBoard(int pos, int *x, int *y);
-int lin(char board[3][3]);
+void globalBoardPrint(char board[3][3]);
+void globalBoardInitializer(char board[3][3]);
