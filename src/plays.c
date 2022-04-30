@@ -2,23 +2,21 @@
 #include "globals.h"
 
 
-void showPlays(Plays **plays){
+void showPlays(Plays *plays){
     //Shows contents of connected list
-
+    Plays *aux = plays;
     int count=1;
     
-    if(*plays == NULL){
+    if(aux == NULL){
         printf("Esta vazia\n");
     }
-    while (plays != NULL){
-        printf("struct : %d \nx=%d\ty=%d\n",count++,(*plays)->x,(*plays)->y);
-        (*plays) = (*plays)->next;
+    while (aux != NULL){
+        printf("Node: %d \nx=%d\ty=%d\nBoard: %d\tnPlays: %d\nPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->nPlays%2 +1);
+        aux = aux->next;
     }
 }
-void addNodePlays(Plays **head,int board, int x, int y){
-    Plays *aux;
-
-    printf("Dentro do add x = %d y = %d\n",x,y);
+void addNodePlays(Plays **head,int board, int x, int y, int nPlays){
+    Plays *aux = *head;
 
     if(*head == NULL){
         *head = (Plays *)malloc(sizeof(Plays));
@@ -29,10 +27,11 @@ void addNodePlays(Plays **head,int board, int x, int y){
         (*head)->x = x;
         (*head)->y = y;
         (*head)->Board = board;
+        (*head)->nPlays = nPlays;
         (*head)->next = NULL;
     }else{
         while(aux->next != NULL){
-            aux = aux->next;
+            aux = aux->next;// saber a posicao onde alocar
         }
         aux->next = (Plays *)malloc(sizeof(Plays));
         if(aux->next == NULL){
@@ -40,10 +39,12 @@ void addNodePlays(Plays **head,int board, int x, int y){
             fprintf(stderr,"Error trying to allocate memory for node of list\n");
             exit(EXIT_FAILURE);
         }
-        aux->next->x = x;
-        aux->next->y = y;
-        aux->next->Board = board;
-        aux->next->next = NULL;
+        aux = aux->next;
+        aux->x = x;
+        aux->y = y;
+        aux->Board = board;
+        aux->nPlays = nPlays;
+        aux->next = NULL;
     }
 }
 
@@ -55,4 +56,24 @@ void removeList(Plays *head){
         aux = aux -> next;
         free(head);
     }
+}
+
+void  showKPlays(Plays *plays, int k,int nPlays){
+    //Shows contents of connected list
+    Plays *aux = plays;
+    int count=1;
+    
+    if(aux == NULL){
+        printf("Esta vazia\n");
+    }
+    if(nPlays == k || nPlays > k){
+        for(int i=0; i<k; ++i){
+            printf("Player %d made the move (%d,%d)\n",aux->nPlays%2 +1,aux->x,aux->y);
+            aux = aux->next;  
+        }
+    }
+    else{
+        printf("Nao ha jogadas suficientes\n");
+    }
+    
 }

@@ -25,7 +25,7 @@ void game(int gameMode){
 
       do{
          boardPrint(atualBoard);
-         nBoard=botPlays(atualBoard,plays,joga,nBoard,&nBoardBefore,&gameMode,&section);
+         nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nBoard);
          while (globalBoard[nBoard / 3][nBoard % 3] != '_')
          {
             nBoard = rand() % 9;
@@ -37,10 +37,11 @@ void game(int gameMode){
             joga=2;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             joga=1;
-             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+            printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+
          }
          else{ 
-            nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section);   
+            nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nBoard);   
             while (globalBoard[nBoard / 3][nBoard % 3] != '_')
             {
                nBoard = rand() % 9;
@@ -72,7 +73,7 @@ void game(int gameMode){
       do{
          boardPrint(atualBoard);
          globalBoardPrint(globalBoard);
-         nBoard=choosePlays(atualBoard,plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section);   
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays);   
          while (globalBoard[nBoard / 3][nBoard % 3] != '_')
          {
             nBoard = rand() % 9;
@@ -96,7 +97,6 @@ void game(int gameMode){
             }         
       }else{
             joga=joga%2 + 1;
-            printf("else joga %d\n",joga);
       }
    }while (resWinner == 0 && nPlays < 9*9); 
 
@@ -109,11 +109,11 @@ void game(int gameMode){
    }
 }
 
-int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section){
-   int pos,x,y,res;
-   char posStr[255];
+int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays){
+   int pos,x,y,res,resp,k,resMenu;
+   char posStr[255], respStr[255],kStr[255],posK;
    *nBoardBefore = nBoard;
-   
+
    printf("\nCurrent board: [%d]",nBoard);
 
    if(jogador == 1){
@@ -124,21 +124,35 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
    }
 
 	do{
-		printf("Position: ");
-      fgets(posStr,sizeof(posStr),stdin);
-      pos = atoi(posStr);
+      
+      resMenu = menuGame(); //1 ou 2
 
-      if(pos < 0 || pos > 8){
-         printf("Please enter a valid input [0-8]\n");
+      if(resMenu == 2){
+         printf("\nPosition: ");
+         fgets(posStr,sizeof(posStr),stdin);
+         pos = atoi(posStr);
+         if(pos < 0 || pos > 8){
+            printf("Please enter a valid input [0-8]\n");
+         }
+         res = convertPosition(pos, &x,&y);
+      }else{
+         if(nPlays < 0 || nPlays  > 10 || nPlays == 0){
+            printf("Sorry, haven't reached the minimum of 10 moves yet\n");
+            continue;
+         }
+         printf("Plays to see [1-10]: ");
+         fgets(kStr,sizeof(kStr),stdin);
+         k = atoi(kStr);
+
+         showKPlays(*plays,k,nPlays);
       }
-      //pos = atoi(postr);
-      res = convertPosition(pos, &x,&y);
+
+      
 
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
-	
-   //showPlays(&plays);
-   addNodePlays(&plays,nBoard,x,y);
-   showPlays(&plays);
+
+   addNodePlays(plays,nBoard,x,y,nPlays);
+   //showPlays(*plays);
    
    if(jogador == 1)
             setPos(board[nBoard].section,x,y,'X');
@@ -149,7 +163,7 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
    return pos;
 }
 
-int botPlays(Board *board, Plays *plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section){
+int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section, int nPlays){
    int pos,x,y,res;
    *nBoardBefore = nBoard; 
 
@@ -163,9 +177,8 @@ int botPlays(Board *board, Plays *plays, int jogador, int nBoard, int *nBoardBef
      
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 || pos == *section );
 
-   //showPlays(&plays);
-   addNodePlays(&plays,nBoard,x,y);
-   showPlays(&plays);
+   addNodePlays(plays,nBoard,x,y,nPlays);
+   showPlays(*plays);
 
    setPos(board[nBoard].section,x,y,'O');
    *mode = 0;
@@ -175,5 +188,25 @@ int botPlays(Board *board, Plays *plays, int jogador, int nBoard, int *nBoardBef
 
 void rules(){
    printf("test\n");
+}
+
+int menuGame(){
+   char opStr[255];
+   int op;
+
+   printf("Choose one option:\n");
+   printf("\t1-Want to see previous plays?\n"
+          "\t2-Play\n");
+   do{
+        printf("Option: ");
+        fgets(opStr,sizeof(opStr),stdin);
+        op = atoi(opStr);
+
+        if(op != 1 && op != 2){
+            printf("Please enter a valid input [1-2]\n");
+        }
+    }while(op != 1 && op != 2 );  
+
+    return op;
 }
 

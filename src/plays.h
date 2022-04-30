@@ -4,6 +4,7 @@ typedef struct Plays{
     int x;
     int y;
     int Board;
+    int nPlays;
     struct Plays *next;
 
     /* int xBoard;
@@ -11,6 +12,7 @@ typedef struct Plays{
 }Plays;
 
 //Todas as funcoes referentes à lista ligada (jogadas)
-void showPlays(Plays **plays);
-void addNodePlays(Plays **head, int board, int x, int y);
+void showPlays(Plays *plays);
+void addNodePlays(Plays **head, int board, int x, int y, int nPlays);
 void removeList(Plays *head);
+void  showKPlays(Plays *plays, int k, int nPlays);
