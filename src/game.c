@@ -138,7 +138,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
       }else{
          if(nPlays < 0 || nPlays  > 10 || nPlays == 0){
             printf("Sorry, haven't reached the minimum of 10 moves yet\n");
-            continue;
+            break;
          }
          printf("Plays to see [1-10]: ");
          fgets(kStr,sizeof(kStr),stdin);
@@ -178,7 +178,7 @@ int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBe
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 || pos == *section );
 
    addNodePlays(plays,nBoard,x,y,nPlays);
-   showPlays(*plays);
+   //showPlays(*plays);
 
    setPos(board[nBoard].section,x,y,'O');
    *mode = 0;
