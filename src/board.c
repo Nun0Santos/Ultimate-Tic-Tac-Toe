@@ -14,14 +14,14 @@ Board *boardsInitializer(){
         board[i].section = malloc(sizeof(char *) * 3); //linhas
         if(board[i].section == NULL){
             fprintf(stderr, "Error trying to allocate memory for section of Board [%d]\n",i);
-            //libertar
+            //libertar memória que já foi alocada - free
             exit(EXIT_FAILURE);
         }
         for (int j = 0; j < 3; j++){
             board[i].section[j] = malloc(sizeof(char) * 3); //colunas
             if (board[i].section[j] == NULL){
                 fprintf(stderr, "Error trying to allocate memory for section[%d] of Board [%d]\n",j,i);
-                //libertar
+                //libertar memória que já foi alocada - free
                 exit(EXIT_FAILURE);
             }
         }

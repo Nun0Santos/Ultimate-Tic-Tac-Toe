@@ -5,7 +5,7 @@ void game(int gameMode){
    Board *atualBoard;
    atualBoard = boardsInitializer();
    char globalBoard[3][3];
-   pPlays plays = NULL;
+   Plays *plays = NULL;
    char playerName[2][255];
    int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0,
        resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
@@ -19,7 +19,7 @@ void game(int gameMode){
    playerName[0][strlen(playerName[0]) - 1] = '\0';
 
    if(gameMode == 1){ //BOT_GAME
-
+   
       //printf("\nComputer Plays\n");
       strcpy(playerName[1],"Computer");
 
@@ -129,16 +129,17 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
       pos = atoi(posStr);
 
       if(pos < 0 || pos > 8){
-         printf("Please enter a valid input [0-9]\n");
+         printf("Please enter a valid input [0-8]\n");
       }
       //pos = atoi(postr);
       res = convertPosition(pos, &x,&y);
-     
-      /*addNodePlays(plays,nBoard,x,y);
-      showPlays(plays);*/
 
-	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9);
+	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
 	
+   //showPlays(&plays);
+   addNodePlays(&plays,nBoard,x,y);
+   showPlays(&plays);
+   
    if(jogador == 1)
             setPos(board[nBoard].section,x,y,'X');
 		else
@@ -148,7 +149,7 @@ int choosePlays(Board *board, Plays *plays, int jogador,char namePlayers[2][255]
    return pos;
 }
 
-int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section){
+int botPlays(Board *board, Plays *plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section){
    int pos,x,y,res;
    *nBoardBefore = nBoard; 
 
@@ -160,11 +161,11 @@ int botPlays(Board *board, pPlays plays, int jogador, int nBoard, int *nBoardBef
       printf("Position: %d\n",pos);
       res = convertPosition(pos, &x,&y);
      
-
-      /*addNodePlays(plays,nBoard,x,y);
-      showPlays(plays);*/
-
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 9 || pos == *section );
+
+   //showPlays(&plays);
+   addNodePlays(&plays,nBoard,x,y);
+   showPlays(&plays);
 
    setPos(board[nBoard].section,x,y,'O');
    *mode = 0;
