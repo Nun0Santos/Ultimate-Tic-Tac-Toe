@@ -8,10 +8,10 @@ void showPlays(Plays *plays){
     int count=1;
     
     if(aux == NULL){
-        printf("Esta vazia\n");
+        printf("Empty list\n");
     }
     while (aux != NULL){
-        printf("Node: %d \nx=%d\ty=%d\nBoard: %d\tnPlays: %d\nPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->nPlays%2 +1);
+        printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->nPlays%2 +1);
         aux = aux->next;
     }
 }
@@ -62,18 +62,18 @@ void  showKPlays(Plays *plays, int k,int nPlays){
     //Shows contents of connected list
     Plays *aux = plays;
     int count=1;
-    
+    puts("\n");
     if(aux == NULL){
-        printf("Esta vazia\n");
+        printf("Empty list\n");
     }
     if(nPlays == k || nPlays > k){
         for(int i=0; i<k; ++i){
-            printf("Player %d made the move (%d,%d)\n",aux->nPlays%2 +1,aux->x,aux->y);
+            printf("Player %d made the move (%d,%d) on Board [%d]\n",aux->nPlays%2 +1,aux->x,aux->y,aux->Board);
             aux = aux->next;  
         }
     }
     else{
-        printf("Nao ha jogadas suficientes\n");
+        printf("There are not enough plays\n");
     }
     
 }

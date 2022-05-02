@@ -19,7 +19,7 @@ void game(int gameMode){
    playerName[0][strlen(playerName[0]) - 1] = '\0';
 
    if(gameMode == 1){ //BOT_GAME
-   
+
       //printf("\nComputer Plays\n");
       strcpy(playerName[1],"Computer");
 
@@ -32,15 +32,18 @@ void game(int gameMode){
          }
          boardPrint(atualBoard);
          ++nPlays;
-
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
             joga=2;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            if(resWinner == 1){
+               printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+               break;
+            }
             joga=1;
             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
 
          }
-         else{ 
+         if(joga ==1){ 
             nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nBoard);   
             while (globalBoard[nBoard / 3][nBoard % 3] != '_')
             {
@@ -48,11 +51,13 @@ void game(int gameMode){
             }
             ++nPlays;
             if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //Human win
-               //joga=2;
                resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+               if(resWinner == 1){
+                  printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+                  break;   
+               }
                joga = 1;
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
-
             }         
          }
       }while (resWinner == 0 && nPlays < 9*9);
@@ -72,7 +77,7 @@ void game(int gameMode){
 
       do{
          boardPrint(atualBoard);
-         globalBoardPrint(globalBoard);
+         //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays);   
          while (globalBoard[nBoard / 3][nBoard % 3] != '_')
          {
@@ -124,30 +129,30 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
    }
 
 	do{
-      
-      resMenu = menuGame(); //1 ou 2
+      resMenu = menuGame(nPlays); //1 ou 2
 
-      if(resMenu == 2){
+      if(resMenu == 1){
+         if(nPlays < 0 || nPlays  > 10 || nPlays == 0){
+           printf("Sorry, haven't reached the minimum of moves yet\n");  
+         }
+         else{
+            printf("Plays to see [1-10]: ");
+            fgets(kStr,sizeof(kStr),stdin);
+            k = atoi(kStr);
+            showKPlays(*plays,k,nPlays);
+         }
+      }
+      do{
          printf("\nPosition: ");
          fgets(posStr,sizeof(posStr),stdin);
          pos = atoi(posStr);
-         if(pos < 0 || pos > 8){
-            printf("Please enter a valid input [0-8]\n");
-         }
-         res = convertPosition(pos, &x,&y);
-      }else{
-         if(nPlays < 0 || nPlays  > 10 || nPlays == 0){
-            printf("Sorry, haven't reached the minimum of 10 moves yet\n");
-            break;
-         }
-         printf("Plays to see [1-10]: ");
-         fgets(kStr,sizeof(kStr),stdin);
-         k = atoi(kStr);
-
-         showKPlays(*plays,k,nPlays);
-      }
-
       
+         if(pos < 0 || pos > 8){
+            printf("Please enter a valid input\n");
+         }
+      }while(pos < 0 || pos > 8);
+
+      res = convertPosition(pos, &x,&y);
 
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
 
@@ -155,11 +160,11 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
    //showPlays(*plays);
    
    if(jogador == 1)
-            setPos(board[nBoard].section,x,y,'X');
-		else
-            setPos(board[nBoard].section,x,y,'O');
-   *mode = 1;
+      setPos(board[nBoard].section,x,y,'X');
+	else
+      setPos(board[nBoard].section,x,y,'O');
 
+   *mode = 1;
    return pos;
 }
 
@@ -190,7 +195,7 @@ void rules(){
    printf("test\n");
 }
 
-int menuGame(){
+int menuGame(int nPlays){
    char opStr[255];
    int op;
 
@@ -205,7 +210,7 @@ int menuGame(){
         if(op != 1 && op != 2){
             printf("Please enter a valid input [1-2]\n");
         }
-    }while(op != 1 && op != 2 );  
+    }while(op != 1 && op != 2);  
 
     return op;
 }
