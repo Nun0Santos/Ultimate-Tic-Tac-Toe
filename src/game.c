@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "game.h"
+#include "file.h"
 
 void game(int gameMode){
    Board *atualBoard;
@@ -78,7 +79,7 @@ void game(int gameMode){
       do{
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays);   
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays);  
          while (globalBoard[nBoard / 3][nBoard % 3] != '_')
          {
             nBoard = rand() % 9;
@@ -112,6 +113,9 @@ void game(int gameMode){
    else
       printf("%s won!\n",playerName[1]);
    }
+   //Exportação para ficheiro
+   exportFile(plays);
+
 }
 
 int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays){
@@ -146,11 +150,13 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
          printf("\nPosition: ");
          fgets(posStr,sizeof(posStr),stdin);
          pos = atoi(posStr);
-      
-         if(pos < 0 || pos > 8){
+
+         res = convertPosition(pos, &x,&y);
+
+         if(pos < 0 || pos > 8 || board[nBoard].section[x][y] != '_'){
             printf("Please enter a valid input\n");
          }
-      }while(pos < 0 || pos > 8);
+      }while(pos < 0 || pos > 8 || board[nBoard].section[x][y] != '_');
 
       res = convertPosition(pos, &x,&y);
 
@@ -215,3 +221,52 @@ int menuGame(int nPlays){
     return op;
 }
 
+/*void pause(Board *board,Plays play){
+    FILE * fp;
+    int i;
+    
+    printf("writing game state to fich.bin...");
+    fp = fopen("fich.bin","wb");
+    
+    if (fp == NULL) {
+        fclose(fp);
+        //end_game(ptable,list);
+    };
+    if (play==NULL){
+        i=0;
+        fwrite(&i,sizeof(int),1,fp); //To indicate that there is no data to read
+        printf("no game data to save, aborting\n");
+    } else {
+        i=1;
+        fwrite(&i,sizeof(int),1,fp); //To indicate that there is data to read
+       /* fwrite(&robot1,sizeof(robot1),1,fp);
+        fwrite(&initdim,sizeof(initdim),1,fp);*/
+        //show(list);
+        /*while (play != NULL){
+            fwrite(play,sizeof(Plays),1,fp);
+            play = play->next;
+        }
+    }*/
+    //Binary save:  
+    //[Int flag wether there's valid data, 0 or 1][robot1][initdim][pmaxplays)][linked list]
+    //fclose(fp);
+    //end_game(ptable,list);
+//}*/
+
+void exportFile(Plays *plays){
+   FILE *fp;
+   char nameFile[255];
+
+   printf("Choose file name to save the succession of all plays: ");
+   fgets(nameFile,sizeof(nameFile),stdin);
+
+   fp = fopen(nameFile,"wt");
+   if (fp == NULL){
+        perror("Failed to save plays to file\n");
+   }
+   printf("%d\n",plays->nPlays);
+   fwrite(&plays->nPlays,sizeof(plays->nPlays),1,fp);
+    
+
+   fclose(fp);
+}

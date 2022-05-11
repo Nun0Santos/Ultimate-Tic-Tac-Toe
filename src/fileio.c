@@ -30,9 +30,10 @@ void initializer(){
     bool gameMode;
     char opStr = 'N';
     FILE *fp;
-   
+    
     //Verify if we have to load the jogo.bin
-    if( (fp = fopen("jogo.txt","rt") ) != NULL){
+    fp = fopen("jogo.txt","rt");
+    if( fp != NULL){
         printf("A jogo.bin file with valid data has bin found, do you wish to load the previous game?(Y/N)");
         
         do{
