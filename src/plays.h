@@ -15,4 +15,4 @@ typedef struct Plays{
 void showPlays(Plays *plays);
 void addNodePlays(Plays **head, int board, int x, int y, int nPlays);
 void removeList(Plays *head);
-void  showKPlays(Plays *plays, int k, int nPlays);
+void showKPlays(Plays *plays, int k, int nPlays);

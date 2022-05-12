@@ -5,12 +5,17 @@
 int menu(){
     char opStr[255];
     int op;
+    printf(" __________________________\n");
+    printf("|    Choose one option:    |\n");
+    printf("|__________________________|\n");
+    printf("|1-Play against person     |\n"
+           "|2-Play against computer   |\n"
+           "|3-Help                    |\n"
+           "|4-Exit                    |\n"
+           "|__________________________|\n");
 
-    printf("Choose one option:\n");
-    printf("\t1-Play against person\n"
-                 "\t2-Play against computer\n"
-                 "\t3-Help\n"
-                 "\t4-Exit\n");
+    putchar('\n');
+    
     do{
         printf("Option: ");
         fgets(opStr,sizeof(opStr),stdin);
@@ -26,27 +31,29 @@ int menu(){
 }
 
 void initializer(){
-    int tmp=0,op;
+    int tmp=0,op,opF;
     bool gameMode;
     char opStr = 'N';
+    char opStrF[255];
     FILE *fp;
     
     //Verify if we have to load the jogo.bin
-    fp = fopen("jogo.txt","rt");
+    fp = fopen("fich.bin","rb");
     if( fp != NULL){
         printf("A jogo.bin file with valid data has bin found, do you wish to load the previous game?(Y/N)");
         
         do{
             printf("Option: ");
-            fgets(&opStr,sizeof(opStr),stdin);
-          
-            if( opStr != 'Y' && opStr != 'N'){
+            fgets(opStrF,sizeof(opStrF),stdin);
+            opF = atoi(opStrF);
+
+            if( opF != 1 && opF != 0){
                 printf("Please enter a valid input: Y(Yes) or N(No)\n");
             }
 
-        }while(opStr != 'Y' && opStr != 'N');
+        }while( opF != 1 && opF != 0);
     }  
-    if(opStr == 'Y'){
+    if(opF == 1){
         fread(&gameMode,sizeof(bool),1,fp);
         fclose(fp);
 
