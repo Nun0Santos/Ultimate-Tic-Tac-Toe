@@ -2,7 +2,7 @@
 #include "game.h"
 #include "file.h"
 
-void game(int gameMode){
+void game(int gameMode, bool resume){
    Board *atualBoard;
    atualBoard = boardsInitializer();
    char globalBoard[3][3];
@@ -11,13 +11,17 @@ void game(int gameMode){
    int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0,
        resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
 
-	nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
-
    globalBoardInitializer(globalBoard);
-   
-   printf("First player name: ");
-   fgets(playerName[0],sizeof(playerName[0]),stdin);
-   playerName[0][strlen(playerName[0]) - 1] = '\0';
+
+   if(resume == RESUME_GAME){
+      plays = loadFich("fich.bin",playerName);
+   }
+   else{
+      nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
+      printf("First player name: ");
+      fgets(playerName[0],sizeof(playerName[0]),stdin);
+      playerName[0][strlen(playerName[0]) - 1] = '\0';
+   }
 
    if(gameMode == 1){ //BOT_GAME
 
@@ -71,16 +75,21 @@ void game(int gameMode){
          printf("%s won!\n",playerName[1]);
 
    }else{ //TWO_PLAYERS
+   
+      if(resume == RESUME_GAME){
+         
+      }
+      else{
+         printf("Second player name: ");
+         fgets(playerName[1],sizeof(playerName[1]),stdin);
+         playerName[1][strlen(playerName[1]) - 1] = '\0';
 
-      printf("Second player name: ");
-      fgets(playerName[1],sizeof(playerName[1]),stdin);
-      playerName[1][strlen(playerName[1]) - 1] = '\0';
-
+      }
       do{
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode);  
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_')
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_')//se ganhar o board na mesma posicao tem bug
          {
             nBoard = rand() % 9;
          }
@@ -148,7 +157,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
       }
       if(resMenu == 3){
          //pause
-         pause(board,*plays,nPlays,gameMode);
+         pause(board,*plays,nPlays,gameMode,namePlayers);
          endGame(board,*plays);
       }
       do{
@@ -162,11 +171,11 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("Please enter a valid input\n");
          }
       }while(pos < 0 || pos > 8 || board[nBoard].section[x][y] != '_');
-
+      
       res = convertPosition(pos, &x,&y);
 
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
-
+  
    addNodePlays(plays,nBoard,x,y,nPlays);
    //showPlays(*plays);
    
@@ -175,7 +184,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
 	else
       setPos(board[nBoard].section,x,y,'O');
 
-   *mode = 1;
+   //*mode = 1;
    return pos;
 }
 
@@ -197,7 +206,7 @@ int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBe
    //showPlays(*plays);
 
    setPos(board[nBoard].section,x,y,'O');
-   *mode = 0;
+   *mode = 1;
 
    return pos;
 }
@@ -231,24 +240,40 @@ int menuGame(int nPlays){
     return op;
 }
 
-void pause(Board *board,Plays *plays, int nPlays, int gameMode){
+void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255]){
     FILE * fp;
     int i;
     plays->nPlays = nPlays;
-    printf("writing game state to fich.bin...");
+    Plays *aux = plays;
+
+    /*printf("Mode: %d\n",gameMode);
+    printf("x: %d\ty: %d\tboard: %d\n",aux->x,aux->y,aux->Board);*/
+   
+    printf("writing game state to fich.bin...\n");
+
     fp = fopen("fich.bin","wb");
     if (fp == NULL) {
-        perror("");
-        fclose(fp);
-        //end_game(ptable,list);
+        perror("Failed to open file\n");
+        endGame(board,plays);
     }
      else {
-        fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
-        fwrite(&plays->nPlays,sizeof(Plays),1,fp); 
-        while (plays != NULL){
-            fwrite(plays,sizeof(Plays),1,fp);
-            plays = plays->next;
-        }
+        if(aux == NULL){
+           printf("List clean\n");
+        }  
+        else{
+            fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
+            fwrite(&nPlays, sizeof(int),1,fp); //total
+            fwrite(&namePlayers[0], sizeof(int),1,fp);
+            fwrite(&namePlayers[1], sizeof(int),1,fp);
+
+            while(aux != NULL){
+               fwrite(&aux->x,sizeof(Plays),1,fp);
+               fwrite(&aux->y,sizeof(Plays),1,fp);
+               fwrite(&aux->Board,sizeof(Plays),1,fp);
+               printf("x:%d\ty:%d\tboard:%d\n",aux->x,aux->y,aux->Board);
+               aux = aux->next;
+            }
+         }
      }
      fclose(fp);  
 }
@@ -266,15 +291,41 @@ void exportFile(Plays *plays, int nPlays){
    if (fp == NULL){
         perror("Failed to save plays to file\n");
    }
-
    fprintf(fp,"%d\n",nPlays);
-   
    for(int i=0; i<nPlays; ++i){
       fprintf(fp,"Player %d made the move (%d,%d) on Board [%d]\n",aux->nPlays%2 +1,aux->x,aux->y,aux->Board);
          aux = aux->next;  
    }
    fclose(fp);
 }
+
+Plays *loadFich(char *nameFile,char namePlayers[2][255]){
+   Plays *novo, *aux, *list = NULL;
+   FILE *fp;
+   char playerName[2][255];
+   int gameMode,total;
+
+   fp = fopen(nameFile, "rb");
+   if(fp == NULL){
+       perror("Failed to open file\n");
+      return NULL;
+   }
+   
+   fread(&gameMode,sizeof(int),1,fp); //ja estou a ler no fileio
+   fread(&total,sizeof(int),1,fp);
+   fread(&playerName[0],sizeof(int),1,fp);
+   fread(&playerName[1],sizeof(int),1,fp);
+
+   strcpy(namePlayers[0],playerName[0]);
+   strcpy(namePlayers[1],playerName[1]);
+
+   /*while( ( fread(&list,sizeof(Plays),1,fp) == 1 ) ){
+         //addNodePlays(&list,list->Board,list->x,list->y,list->nPlays);
+         //list = list->next;
+   }*/
+}
+
+
 void endGame(Board *board, Plays *plays){
    //removeList(plays);
    //freeBoards(board);

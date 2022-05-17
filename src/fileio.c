@@ -34,48 +34,77 @@ void initializer(){
     int tmp=0,op,opF;
     bool gameMode;
     char opStr = 'N';
-    char opStrF[255];
+    char loadopt = 'N';
     FILE *fp;
+    Plays *plays = NULL;
     
     //Verify if we have to load the jogo.bin
     fp = fopen("fich.bin","rb");
     if( fp != NULL){
-        printf("A jogo.bin file with valid data has bin found, do you wish to load the previous game?(Y/N)");
+        printf("A jogo.bin file with valid data has bin found, do you wish to load the previous game?(Y/N)\n");
         
         do{
             printf("Option: ");
-            fgets(opStrF,sizeof(opStrF),stdin);
-            opF = atoi(opStrF);
-
-            if( opF != 1 && opF != 0){
+            scanf("%c",&loadopt);
+            
+            if( loadopt != 'Y' && loadopt != 'N'){
                 printf("Please enter a valid input: Y(Yes) or N(No)\n");
             }
 
-        }while( opF != 1 && opF != 0);
-    }  
-    if(opF == 1){
-        fread(&gameMode,sizeof(bool),1,fp);
-        fclose(fp);
+        }while( loadopt != 'Y' && loadopt != 'N');
 
-        if(gameMode == BOT_GAME)
-            game(gameMode); //Computador (Resumir)
-        else
-            game(gameMode); //2 Players (Resumir)
-    }
-    else{//Option == N
-       //fclose(fp);
-    }
+        if(loadopt == 'Y'){
+            /*plays = loadPlays("fich.bin");
+            showPlays(plays);*/
+            fread(&gameMode,sizeof(bool),1,fp);
+            fclose(fp);
+
+            if(gameMode == BOT_GAME)
+                game(gameMode,RESUME_GAME); //Computador (Resumir)
+            else
+                game(gameMode,RESUME_GAME); //2 Players (Resumir)
+        }
+        else{//Option == N
+         fclose(fp);
+         remove("fich.bin");
+        }
+
+    }  
     
-    if(opStr == 'N'){
+    //fflush(stdin);
+    if(opStr == 'N' && loadopt == 'N'){
         op = menu();
 
         do{
             if(op == 1)//2 jogadores
-                game(TWO_PLAYERS);
+                game(TWO_PLAYERS,NEW_GAME);
             if(op == 2)//Computer
-                game(BOT_GAME);
+                game(BOT_GAME,NEW_GAME);
             if(op == 3)//rules 
                 rules();
         }while(op == 3);
     }
+}
+
+void printFile(char *nameFile){
+    FILE *fp;
+    int count =0,gameMode,total;
+    Plays p;
+    Board *board;
+    char st[255];
+    fp = fopen(nameFile,"rb");
+    if(fp == NULL){
+        perror("Erro ao tentar abrir o ficheiro para leitura ");
+    }
+   
+    fread(&gameMode,sizeof(int),1,fp);
+    printf("gameMode: %d\n",gameMode);
+    fread(&total,sizeof(int),1,fp);
+    printf("total: %d\n",total);
+
+    while( (fread(&p,sizeof(Plays),1,fp) ) == 1){
+      printf("x: %d\ty: %d\tboard: %d\n",p.x,p.y,p.Board);
+    }
+
+    fclose(fp);
 }
