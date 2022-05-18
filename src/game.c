@@ -14,7 +14,9 @@ void game(int gameMode, bool resume){
    globalBoardInitializer(globalBoard);
 
    if(resume == RESUME_GAME){
-      plays = loadFich("fich.bin",playerName);
+      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard);
+      showPlays(plays);
+   
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -31,7 +33,7 @@ void game(int gameMode, bool resume){
       do{
          boardPrint(atualBoard);
          nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nBoard);
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_')
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
          {
             nBoard = rand() % 9;
          }
@@ -89,8 +91,8 @@ void game(int gameMode, bool resume){
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode);  
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_')//se ganhar o board na mesma posicao tem bug
-         {
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard)//se ganhar o board na mesma posicao tem bug
+         {  
             nBoard = rand() % 9;
          }
          convertPositionBoard(nBoard,&x,&y);
@@ -157,8 +159,13 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
       }
       if(resMenu == 3){
          //pause
-         pause(board,*plays,nPlays,gameMode,namePlayers);
-         endGame(board,*plays);
+         if(nPlays == 0){
+            printf("There are no plays to save, please make a play\n");
+         }
+         else{
+            pause(board,*plays,nPlays,gameMode,namePlayers);
+            endGame(board,*plays);
+         }
       }
       do{
          printf("\nPosition: ");
@@ -246,9 +253,6 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
     plays->nPlays = nPlays;
     Plays *aux = plays;
 
-    /*printf("Mode: %d\n",gameMode);
-    printf("x: %d\ty: %d\tboard: %d\n",aux->x,aux->y,aux->Board);*/
-   
     printf("writing game state to fich.bin...\n");
 
     fp = fopen("fich.bin","wb");
@@ -263,13 +267,14 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
         else{
             fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
             fwrite(&nPlays, sizeof(int),1,fp); //total
-            fwrite(&namePlayers[0], sizeof(int),1,fp);
-            fwrite(&namePlayers[1], sizeof(int),1,fp);
+            fwrite(&namePlayers[0], sizeof(namePlayers[0]),1,fp);
+            fwrite(&namePlayers[1], sizeof(namePlayers[1]),1,fp);
 
             while(aux != NULL){
-               fwrite(&aux->x,sizeof(Plays),1,fp);
-               fwrite(&aux->y,sizeof(Plays),1,fp);
-               fwrite(&aux->Board,sizeof(Plays),1,fp);
+               fwrite(&aux->x,sizeof(int),1,fp);
+               fwrite(&aux->y,sizeof(int),1,fp);
+               fwrite(&aux->Board,sizeof(int),1,fp);
+               fwrite(&aux->nPlays,sizeof(int),1,fp);
                printf("x:%d\ty:%d\tboard:%d\n",aux->x,aux->y,aux->Board);
                aux = aux->next;
             }
@@ -299,10 +304,10 @@ void exportFile(Plays *plays, int nPlays){
    fclose(fp);
 }
 
-Plays *loadFich(char *nameFile,char namePlayers[2][255]){
-   Plays *novo, *aux, *list = NULL;
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard){
+   Plays *list = NULL;
+   Plays aux;
    FILE *fp;
-   char playerName[2][255];
    int gameMode,total;
 
    fp = fopen(nameFile, "rb");
@@ -310,19 +315,31 @@ Plays *loadFich(char *nameFile,char namePlayers[2][255]){
        perror("Failed to open file\n");
       return NULL;
    }
-   
+
    fread(&gameMode,sizeof(int),1,fp); //ja estou a ler no fileio
    fread(&total,sizeof(int),1,fp);
-   fread(&playerName[0],sizeof(int),1,fp);
-   fread(&playerName[1],sizeof(int),1,fp);
+   fread(&namePlayers[0],sizeof(namePlayers[0]),1,fp);
+   fread(&namePlayers[1],sizeof(namePlayers[1]),1,fp);
+   printf("%s\n",namePlayers[0]);
 
-   strcpy(namePlayers[0],playerName[0]);
-   strcpy(namePlayers[1],playerName[1]);
+   while(fread(&aux.x,sizeof(int),1,fp) &&
+      fread(&aux.y,sizeof(int),1,fp) &&
+      fread(&aux.Board,sizeof(int),1,fp) && 
+      fread(&aux.nPlays,sizeof(int),1,fp) )
+      {
+         //printf("x:%d\ty:%d\tboard:%d\n",aux.x,aux.y,aux.Board);
+         addNodePlays(&list,aux.Board,aux.x,aux.y,total);
 
-   /*while( ( fread(&list,sizeof(Plays),1,fp) == 1 ) ){
-         //addNodePlays(&list,list->Board,list->x,list->y,list->nPlays);
-         //list = list->next;
-   }*/
+         *nBoard = aux.Board;
+
+         if(aux.nPlays%2 == 0)
+            board[*nBoard].section[aux.x][aux.y] = 'X';  
+         else
+            board[*nBoard].section[aux.x][aux.y] = 'O';  
+         
+   }
+   fclose(fp);
+   return list;
 }
 
 

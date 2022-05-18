@@ -86,25 +86,3 @@ void initializer(){
     }
 }
 
-void printFile(char *nameFile){
-    FILE *fp;
-    int count =0,gameMode,total;
-    Plays p;
-    Board *board;
-    char st[255];
-    fp = fopen(nameFile,"rb");
-    if(fp == NULL){
-        perror("Erro ao tentar abrir o ficheiro para leitura ");
-    }
-   
-    fread(&gameMode,sizeof(int),1,fp);
-    printf("gameMode: %d\n",gameMode);
-    fread(&total,sizeof(int),1,fp);
-    printf("total: %d\n",total);
-
-    while( (fread(&p,sizeof(Plays),1,fp) ) == 1){
-      printf("x: %d\ty: %d\tboard: %d\n",p.x,p.y,p.Board);
-    }
-
-    fclose(fp);
-}

@@ -17,4 +17,4 @@ void endGame(Board *board, Plays *plays);
 void exportFile(Plays *plays, int nPlays);
 void pause(Board *board,Plays *plays,int nPlays,int gameMode,char namePlayers[2][255]);
 
-Plays *loadFich(char *nameFile,char namePlayers[2][255]);
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard);
