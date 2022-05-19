@@ -1,3 +1,6 @@
+#ifndef BOARD_H
+#define BOARD_H
+
 #include "plays.h"
 
 typedef struct Board{
@@ -12,6 +15,8 @@ void globalBoardPrint(char board[3][3]);
 int verifyWinner(Board *board, int nBoard);//secção
 int verifyGlobalWinner(char board[3][3]);
 int convertPosition(int position, int *x, int *y);
-int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]);
+int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]); //METE um X ou O na pos 1 1 
 void convertPositionBoard(int pos, int *x, int *y);
 void freeBoards(Board *board);
+
+#endif

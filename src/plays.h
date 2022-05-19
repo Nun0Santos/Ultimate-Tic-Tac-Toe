@@ -1,3 +1,5 @@
+#ifndef PLAYS_H
+#define PLAYS_H
 
 typedef struct Plays{
     int player;
@@ -16,3 +18,5 @@ void showPlays(Plays *plays);
 void addNodePlays(Plays **head, int board, int x, int y, int nPlays);
 void removeList(Plays *head);
 void showKPlays(Plays *plays, int k, int nPlays);
+
+#endif

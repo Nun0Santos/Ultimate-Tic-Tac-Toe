@@ -6,5 +6,7 @@
 int menu();
 void initializer();
 void printFile(char *nameFile);
+int menuGame(int nPlays);
+
 
 #endif

@@ -30,6 +30,31 @@ int menu(){
     return op;
 }
 
+int menuGame(int nPlays){
+   char opStr[255];
+   int op;
+         
+   printf(" ___________________________________\n");
+   printf("|        Choose one option:         |\n");
+   printf("|___________________________________|\n");
+   printf("|1-Want to see previous plays?      |\n"
+          "|2-Play                             |\n"
+          "|3-Pause                            |\n"); 
+   printf("|___________________________________|\n");
+   putchar('\n');
+   do{
+        printf("Option: ");
+        fgets(opStr,sizeof(opStr),stdin);
+        op = atoi(opStr);
+
+        if(op != 1 && op != 2 && op != 3){
+            printf("Please enter a valid input [1-3]\n");
+        }
+    }while(op != 1 && op != 2 && op != 3);  
+
+    return op;
+}
+
 void initializer(){
     int tmp=0,op,opF;
     bool gameMode;
