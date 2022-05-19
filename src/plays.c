@@ -7,9 +7,9 @@ void showPlays(Plays *plays){
     Plays *aux = plays;
     int count=1;
     
-    if(aux == NULL){
+    if(aux == NULL)
         printf("Empty list\n");
-    }
+
     while (aux != NULL){
         printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->nPlays%2 +1);
         aux = aux->next;

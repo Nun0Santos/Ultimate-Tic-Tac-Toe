@@ -90,7 +90,6 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
             board[*nBoard].section[aux.x][aux.y] = 'X';  
          else
             board[*nBoard].section[aux.x][aux.y] = 'O';  
-         
    }
    fclose(fp);
    return list;

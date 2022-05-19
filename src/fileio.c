@@ -1,7 +1,6 @@
 #include "globals.h"
 #include "header.h"
 
-
 int menu(){
     char opStr[255];
     int op;
@@ -79,8 +78,6 @@ void initializer(){
         }while( loadopt != 'Y' && loadopt != 'N');
 
         if(loadopt == 'Y'){
-            /*plays = loadPlays("fich.bin");
-            showPlays(plays);*/
             fread(&gameMode,sizeof(bool),1,fp);
             fclose(fp);
 
@@ -93,10 +90,8 @@ void initializer(){
          fclose(fp);
          remove("fich.bin");
         }
-
     }  
     
-    //fflush(stdin);
     if(opStr == 'N' && loadopt == 'N'){
         op = menu();
 
