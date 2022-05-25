@@ -14,6 +14,7 @@ void game(int gameMode, bool resume){
    if(resume == RESUME_GAME){
       plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard);
       showPlays(plays);
+      
    
    }
    else{
@@ -30,39 +31,42 @@ void game(int gameMode, bool resume){
 
       do{
          boardPrint(atualBoard);
-         nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nBoard);
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nBoard,gameMode);   
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
          {
             nBoard = rand() % 9;
          }
          boardPrint(atualBoard);
          ++nPlays;
-         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
-            joga=2;
+
+         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //human win
+            joga=1;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             if(resWinner == 1){
                printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
                break;
             }
+
             joga=1;
-            printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+            printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
 
          }
          if(joga ==1){ 
-            nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nBoard,gameMode);   
+            nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nBoard);
             while (globalBoard[nBoard / 3][nBoard % 3] != '_')
             {
                nBoard = rand() % 9;
             }
             ++nPlays;
-            if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //Human win
+            if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
+               joga = 2;
                resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
                if(resWinner == 1){
-                  printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
+                  printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
                   break;   
                }
                joga = 1;
-               printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
+               printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
             }         
          }
       }while (resWinner == 0 && nPlays < 9*9);
@@ -149,6 +153,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
            printf("Sorry, haven't reached the minimum of moves yet\n");  
          }
          else{
+            printf("Total plays: %d\n",nPlays);
             printf("Plays to see [1-10]: ");
             fgets(kStr,sizeof(kStr),stdin);
             k = atoi(kStr);
