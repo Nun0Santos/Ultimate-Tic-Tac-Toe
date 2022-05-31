@@ -15,6 +15,9 @@ Board *boardsInitializer(){
         if(board[i].section == NULL){
             fprintf(stderr, "Error trying to allocate memory for section of Board [%d]\n",i);
             //libertar memória que já foi alocada - free
+            for(int j=0; j<i; ++j){
+                freeBoards(board);
+            }
             exit(EXIT_FAILURE);
         }
         for (int j = 0; j < 3; j++){
@@ -22,6 +25,9 @@ Board *boardsInitializer(){
             if (board[i].section[j] == NULL){
                 fprintf(stderr, "Error trying to allocate memory for section[%d] of Board [%d]\n",j,i);
                 //libertar memória que já foi alocada - free
+                for(int j=0; j<i; ++j){
+                    freeBoards(board);
+                }
                 exit(EXIT_FAILURE);
             }
         }
@@ -284,7 +290,7 @@ void convertPositionBoard(int pos, int *x, int *y){
 }
 
 void freeBoards(Board *board){
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 9; i++){
         free(board[i].section);
     }
     free(board);

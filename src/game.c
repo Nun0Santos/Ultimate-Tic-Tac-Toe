@@ -6,16 +6,21 @@ void game(int gameMode, bool resume){
    char globalBoard[3][3];
    Plays *plays = NULL;
    char playerName[2][255];
-   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0,
+   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0, completedBoards[9],iterator=0,
        resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
 
    globalBoardInitializer(globalBoard);
 
    if(resume == RESUME_GAME){
-      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard);
-      showPlays(plays);
-      
-   
+      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,iterator);
+      nBoard = nBoardBefore;
+       printf("board:%d\n",completedBoards[iterator]);
+      for(int i = 0; i<iterator; ++i){
+         printf("board:%d\n",completedBoards[i]);
+         if(verifyWinner(atualBoard,completedBoards[i])  == 0 ){
+            resWinner = winnerSection(atualBoard,completedBoards[i],globalBoard,joga,playerName);
+         }
+      }
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -25,13 +30,13 @@ void game(int gameMode, bool resume){
    }
 
    if(gameMode == 1){ //BOT_GAME
-
+      
       //printf("\nComputer Plays\n");
       strcpy(playerName[1],"Computer");
 
       do{
          boardPrint(atualBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nBoard,gameMode);   
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);   
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
          {
             nBoard = rand() % 9;
@@ -52,7 +57,7 @@ void game(int gameMode, bool resume){
 
          }
          if(joga ==1){ 
-            nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nBoard);
+            nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nPlays);
             while (globalBoard[nBoard / 3][nBoard % 3] != '_')
             {
                nBoard = rand() % 9;
@@ -77,11 +82,17 @@ void game(int gameMode, bool resume){
          printf("%s won!\n",playerName[0]);
       else
          printf("%s won!\n",playerName[1]);
-
+      //Exportação para ficheiro
+      exportFile(plays,nPlays);
+      /*removeList(plays);
+      showPlays(plays);*/
+      endGame(atualBoard,plays);
+      
    }else{ //TWO_PLAYERS
    
       if(resume == RESUME_GAME){
-         
+
+      
       }
       else{
          printf("Second player name: ");
@@ -92,19 +103,19 @@ void game(int gameMode, bool resume){
       do{
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode);  
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard)//se ganhar o board na mesma posicao tem bug
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator-1);  
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard)
          {  
             nBoard = rand() % 9;
          }
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
-         
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             flagWinnerSection = 1;
             section = nBoardBefore;
-
+            //completedBoards[iterator] = section; ++iterator;
+            
             if(joga == 1){
                joga = 2;
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
@@ -126,12 +137,16 @@ void game(int gameMode, bool resume){
    else
       printf("%s won!\n",playerName[0]);
    }
+  
    //Exportação para ficheiro
    exportFile(plays,nPlays);
+   removeList(plays); // nao esta a remover
+   showPlays(plays);
+   //endGame(atualBoard,plays);
 
 }
 
-int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode ){
+int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode, int *completedBoards, int howManyBoards ){
    int pos,x,y,res,resp,k,resMenu;
    char posStr[255], respStr[255],kStr[255],posK;
    *nBoardBefore = nBoard;
@@ -146,7 +161,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
    }
 
 	do{
-      resMenu = menuGame(nPlays); //1, 2 ou 3 
+      resMenu = menuGame(); //1, 2 ou 3 
 
       if(resMenu == 1){
          if(nPlays < 0 || nPlays == 0){
@@ -166,7 +181,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
-            pause(board,*plays,nPlays,gameMode,namePlayers);
+            pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards);
             endGame(board,*plays);
          }
       }
@@ -187,8 +202,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
   
    addNodePlays(plays,nBoard,x,y,nPlays);
-   //showPlays(*plays);
-   
+
    if(jogador == 1)
       setPos(board[nBoard].section,x,y,'X');
 	else
@@ -227,7 +241,7 @@ void rules(){
 
 
 void endGame(Board *board, Plays *plays){
-   //removeList(plays);
-   //freeBoards(board);
+   removeList(plays);
+   freeBoards(board);
    exit(0); //Skips everything and returns 0
 }

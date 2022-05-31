@@ -1,12 +1,11 @@
 #include "file.h"
 
 
-void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255]){
+void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore,int *completedBoards, int howManyBoards){
     FILE * fp;
     int i;
     plays->nPlays = nPlays;
     Plays *aux = plays;
-
     printf("writing game state to fich.bin...\n");
 
     fp = fopen("fich.bin","wb");
@@ -23,6 +22,10 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             fwrite(&nPlays, sizeof(int),1,fp); //total
             fwrite(&namePlayers[0], sizeof(namePlayers[0]),1,fp);
             fwrite(&namePlayers[1], sizeof(namePlayers[1]),1,fp);
+            fwrite(&joga,sizeof(int),1,fp); 
+            fwrite(&nBoardBefore,sizeof(int),1,fp);
+            fwrite(&howManyBoards,sizeof(int),1,fp);
+            fwrite(&completedBoards[howManyBoards],sizeof(int),1,fp);
 
             while(aux != NULL){
                fwrite(&aux->x,sizeof(int),1,fp);
@@ -58,11 +61,11 @@ void exportFile(Plays *plays, int nPlays){
    fclose(fp);
 }
 
-Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard){
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int howManyBoards){
    Plays *list = NULL;
    Plays aux;
    FILE *fp;
-   int gameMode,total;
+   int gameMode,total,jogador,nBoardbefore, boardsCompleted[9],iterator;
 
    fp = fopen(nameFile, "rb");
    if(fp == NULL){
@@ -72,25 +75,32 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
 
    fread(&gameMode,sizeof(int),1,fp); //ja estou a ler no fileio
    fread(&total,sizeof(int),1,fp);
+   *nPlays = total;
    fread(&namePlayers[0],sizeof(namePlayers[0]),1,fp);
    fread(&namePlayers[1],sizeof(namePlayers[1]),1,fp);
-   printf("%s\n",namePlayers[0]);
+   fread(&jogador,sizeof(int),1,fp);
+   fread(&nBoardbefore,sizeof(int),1,fp);
+   *joga= jogador;
+   *nBoardBefore = nBoardbefore;
+   fread(&iterator,sizeof(int),1,fp);
+   fread(&boardsCompleted[iterator],sizeof(int),1,fp);
 
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
       fread(&aux.Board,sizeof(int),1,fp) && 
       fread(&aux.nPlays,sizeof(int),1,fp) )
       {
-         //printf("x:%d\ty:%d\tboard:%d\n",aux.x,aux.y,aux.Board);
-         addNodePlays(&list,aux.Board,aux.x,aux.y,total);
-
+         //printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.nPlays%2 +1);
+         addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays);
+         
          *nBoard = aux.Board;
 
-         if(aux.nPlays%2 == 0)
+         if(aux.nPlays%2 +1 == 1)
             board[*nBoard].section[aux.x][aux.y] = 'X';  
          else
             board[*nBoard].section[aux.x][aux.y] = 'O';  
    }
+   //showPlays(list);
    fclose(fp);
    return list;
 }

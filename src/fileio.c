@@ -29,7 +29,7 @@ int menu(){
     return op;
 }
 
-int menuGame(int nPlays){
+int menuGame(){
    char opStr[255];
    int op;
          

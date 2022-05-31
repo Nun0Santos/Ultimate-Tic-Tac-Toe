@@ -49,12 +49,12 @@ void addNodePlays(Plays **head,int board, int x, int y, int nPlays){
 }
 
 void removeList(Plays *head){
-    Plays *aux = head;
+    Plays *aux;
 
-    while(aux){
-        head = aux;
-        aux = aux -> next;
-        free(head);
+    while(head != NULL){
+        aux = head;
+        head = head -> next;
+        free(aux);
     }
 }
 
