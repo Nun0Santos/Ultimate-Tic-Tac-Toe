@@ -14,7 +14,7 @@ void game(int gameMode, bool resume){
    if(resume == RESUME_GAME){
       plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,iterator);
       nBoard = nBoardBefore;
-       printf("board:%d\n",completedBoards[iterator]);
+      printf("board:%d\n",completedBoards[iterator]);
       for(int i = 0; i<iterator; ++i){
          printf("board:%d\n",completedBoards[i]);
          if(verifyWinner(atualBoard,completedBoards[i])  == 0 ){

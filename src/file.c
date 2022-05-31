@@ -92,10 +92,10 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
       {
          //printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.nPlays%2 +1);
          addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays);
-         
+         //SE O NUMERO DE JOGADAS FOR IMPAR MUDA A PRIMEIRA JOGADA PARA O JOGADOR 2
          *nBoard = aux.Board;
 
-         if(aux.nPlays%2 +1 == 1)
+         if(aux.nPlays%2 + 1 == 1)
             board[*nBoard].section[aux.x][aux.y] = 'X';  
          else
             board[*nBoard].section[aux.x][aux.y] = 'O';  
