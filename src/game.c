@@ -6,16 +6,16 @@ void game(int gameMode, bool resume){
    char globalBoard[3][3];
    Plays *plays = NULL;
    char playerName[2][255];
-   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0, completedBoards[9],iterator=0,
+   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0, completedBoards[9],iterator=0,itLoad=0,
        resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
 
    globalBoardInitializer(globalBoard);
 
    if(resume == RESUME_GAME){
-      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,iterator);
+      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad);
       nBoard = nBoardBefore;
-      printf("board:%d\n",completedBoards[iterator]);
-      for(int i = 0; i<iterator; ++i){
+         printf("ITERATOR INCIO: %d\n",itLoad);
+      for(int i = 0; i<itLoad; ++i){
          printf("board:%d\n",completedBoards[i]);
          if(verifyWinner(atualBoard,completedBoards[i])  == 0 ){
             resWinner = winnerSection(atualBoard,completedBoards[i],globalBoard,joga,playerName);
@@ -103,7 +103,7 @@ void game(int gameMode, bool resume){
       do{
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator-1);  
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);  
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard)
          {  
             nBoard = rand() % 9;
@@ -114,7 +114,10 @@ void game(int gameMode, bool resume){
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             flagWinnerSection = 1;
             section = nBoardBefore;
-            //completedBoards[iterator] = section; ++iterator;
+            completedBoards[iterator] = section; 
+            ++iterator;
+            for(int i= 0; i<iterator; i++)
+               printf("completedBoards: %d\n",completedBoards[i]);
             
             if(joga == 1){
                joga = 2;
@@ -161,6 +164,8 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
    }
 
 	do{
+      for(int i = 0; i<howManyBoards; ++i)
+               printf("boards antes do menu %d\n",completedBoards[i]);
       resMenu = menuGame(); //1, 2 ou 3 
 
       if(resMenu == 1){
@@ -181,6 +186,9 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
+            printf("how %d\n",howManyBoards);
+            for(int i = 0; i<howManyBoards; ++i)
+               printf("boards no choose %d\n",completedBoards[i]);
             pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards);
             endGame(board,*plays);
          }
@@ -202,7 +210,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
   
    addNodePlays(plays,nBoard,x,y,nPlays);
-
+   
    if(jogador == 1)
       setPos(board[nBoard].section,x,y,'X');
 	else

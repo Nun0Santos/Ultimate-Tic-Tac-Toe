@@ -25,8 +25,9 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             fwrite(&joga,sizeof(int),1,fp); 
             fwrite(&nBoardBefore,sizeof(int),1,fp);
             fwrite(&howManyBoards,sizeof(int),1,fp);
-            fwrite(&completedBoards[howManyBoards],sizeof(int),1,fp);
-
+            fwrite(completedBoards,sizeof(int),1,fp);
+            for(int i = 0; i<howManyBoards; ++i)
+         printf("boards PAUSE: %d\n",completedBoards[i]);
             while(aux != NULL){
                fwrite(&aux->x,sizeof(int),1,fp);
                fwrite(&aux->y,sizeof(int),1,fp);
@@ -61,11 +62,11 @@ void exportFile(Plays *plays, int nPlays){
    fclose(fp);
 }
 
-Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int howManyBoards){
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int *itLoad){
    Plays *list = NULL;
    Plays aux;
    FILE *fp;
-   int gameMode,total,jogador,nBoardbefore, boardsCompleted[9],iterator;
+   int gameMode,total,jogador,nBoardbefore;
 
    fp = fopen(nameFile, "rb");
    if(fp == NULL){
@@ -82,9 +83,12 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
    fread(&nBoardbefore,sizeof(int),1,fp);
    *joga= jogador;
    *nBoardBefore = nBoardbefore;
-   fread(&iterator,sizeof(int),1,fp);
-   fread(&boardsCompleted[iterator],sizeof(int),1,fp);
-
+   fread(itLoad,sizeof(int),1,fp);
+   fread(completedBoards,sizeof(int),1,fp);
+   
+   printf("iterator :%d\n",*itLoad);
+   for(int i = 0; i<*itLoad; ++i)
+         printf("boards LOADS: %d\n",completedBoards[i]);
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
       fread(&aux.Board,sizeof(int),1,fp) && 
