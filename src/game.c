@@ -12,15 +12,8 @@ void game(int gameMode, bool resume){
    globalBoardInitializer(globalBoard);
 
    if(resume == RESUME_GAME){
-      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad);
+      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad,globalBoard);
       nBoard = nBoardBefore;
-         printf("ITERATOR INCIO: %d\n",itLoad);
-      for(int i = 0; i<itLoad; ++i){
-         printf("board:%d\n",completedBoards[i]);
-         if(verifyWinner(atualBoard,completedBoards[i])  == 0 ){
-            resWinner = winnerSection(atualBoard,completedBoards[i],globalBoard,joga,playerName);
-         }
-      }
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -116,9 +109,8 @@ void game(int gameMode, bool resume){
             section = nBoardBefore;
             completedBoards[iterator] = section; 
             ++iterator;
-            for(int i= 0; i<iterator; i++)
-               printf("completedBoards: %d\n",completedBoards[i]);
-            
+          //  plays->player = joga;
+          
             if(joga == 1){
                joga = 2;
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
@@ -164,8 +156,6 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
    }
 
 	do{
-      for(int i = 0; i<howManyBoards; ++i)
-               printf("boards antes do menu %d\n",completedBoards[i]);
       resMenu = menuGame(); //1, 2 ou 3 
 
       if(resMenu == 1){
@@ -186,9 +176,6 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
-            printf("how %d\n",howManyBoards);
-            for(int i = 0; i<howManyBoards; ++i)
-               printf("boards no choose %d\n",completedBoards[i]);
             pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards);
             endGame(board,*plays);
          }

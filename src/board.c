@@ -230,7 +230,7 @@ int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador,
             board[nBoard].section[i][j] = ' ';
 
     convertPositionBoard(nBoard,&x,&y);
-    
+    printf("jogador NO WINNERSECTION: %d\n",jogador);
     if(jogador == 1){
         globalBoard[x][y] = 'X';
         board[nBoard].section[1][1] = 'X';
