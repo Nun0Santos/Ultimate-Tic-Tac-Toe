@@ -28,12 +28,16 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             fwrite(&howManyBoards,sizeof(int),1,fp);
             for(int i = 0; i<howManyBoards; ++i)
                fwrite(&completedBoards[i],sizeof(int),1,fp);
-            //printf("PAUSE howManyBoards: %d\n",howManyBoards);
+            
+             for(int i = 0; i<howManyBoards; ++i)
+               printf("FWRITE CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+
             while(aux != NULL){
                fwrite(&aux->x,sizeof(int),1,fp);
                fwrite(&aux->y,sizeof(int),1,fp);
                fwrite(&aux->Board,sizeof(int),1,fp);
                fwrite(&aux->nPlays,sizeof(int),1,fp);
+               fwrite(&aux->player,sizeof(int),1,fp);
                //printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
                aux = aux->next;
             }
@@ -90,15 +94,16 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
 
    printf("itLoad: %d\n",*itLoad);
    for(int i = 0; i<*itLoad; ++i)
-      printf("CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+      printf("FREAD CompletedBoards [%d]: %d\n",i,completedBoards[i]);
 
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
       fread(&aux.Board,sizeof(int),1,fp) && 
-      fread(&aux.nPlays,sizeof(int),1,fp) )
+      fread(&aux.nPlays,sizeof(int),1,fp) &&
+      fread(&aux.player,sizeof(int),1,fp) )
    {
-      //printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.nPlays%2 +1);
-      addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays);
+      printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.player);
+      addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays,aux.player);
       *nBoard = aux.Board;
 
       if(count%2 == 0 ){

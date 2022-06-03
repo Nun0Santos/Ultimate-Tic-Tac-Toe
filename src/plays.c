@@ -11,11 +11,11 @@ void showPlays(Plays *plays){
         printf("Empty list\n");
 
     while (aux != NULL){
-        printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->nPlays%2 +1);
+        printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->player);
         aux = aux->next;
     }
 }
-void addNodePlays(Plays **head,int board, int x, int y, int nPlays){
+void addNodePlays(Plays **head,int board, int x, int y, int nPlays, int player){
     Plays *aux = *head;
 
     if(*head == NULL){
@@ -27,6 +27,7 @@ void addNodePlays(Plays **head,int board, int x, int y, int nPlays){
         (*head)->x = x;
         (*head)->y = y;
         (*head)->Board = board;
+        (*head)->player = player;
         (*head)->nPlays = nPlays;
         (*head)->next = NULL;
     }else{
@@ -43,6 +44,7 @@ void addNodePlays(Plays **head,int board, int x, int y, int nPlays){
         aux->x = x;
         aux->y = y;
         aux->Board = board;
+        aux->player = player;
         aux->nPlays = nPlays;
         aux->next = NULL;
     }
@@ -58,15 +60,21 @@ void removeList(Plays *head){
     }
 }
 
-void  showKPlays(Plays *plays, int k,int nPlays){
+void  showKPlays(Plays *plays, int k,int nPlays, int *cont){
     //Shows contents of connected list
     Plays *aux = plays;
-    int count=0;
-    puts("\n");
-    if(aux == NULL){
-        printf("Empty list\n");
+    //int count=0;
+    //puts("\n");
+    if(aux == NULL)return;
+    
+    showKPlays(aux->next,k,nPlays,cont);
+    (*cont)++;
+
+    if(k>=*cont){
+        printf("Player %d made the move (%d,%d) on Board [%d]\n",aux->player,aux->x,aux->y,aux->Board);            
+       
     }
-    if(nPlays == k || nPlays > k){
+    /*if(nPlays == k || nPlays > k){
         for(int i=0; i<k; ++i){
             printf("Player %d made the move (%d,%d) on Board [%d]\n",count%2 +1,aux->x,aux->y,aux->Board);
             aux = aux->next;  
@@ -75,6 +83,6 @@ void  showKPlays(Plays *plays, int k,int nPlays){
     }
     else{
         printf("There are not enough plays\n");
-    }
+    }*/
     
 }

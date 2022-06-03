@@ -15,8 +15,8 @@ typedef struct Plays{
 
 //Todas as funcoes referentes à lista ligada (jogadas)
 void showPlays(Plays *plays);
-void addNodePlays(Plays **head, int board, int x, int y, int nPlays);
+void addNodePlays(Plays **head, int board, int x, int y, int nPlays, int palyer);
 void removeList(Plays *head);
-void showKPlays(Plays *plays, int k, int nPlays);
+void showKPlays(Plays *plays, int k, int nPlays,int *cont);
 
 #endif

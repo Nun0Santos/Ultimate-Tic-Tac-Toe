@@ -28,10 +28,6 @@ void game(int gameMode, bool resume){
       do{
          boardPrint(atualBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);   
-         /*while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
-         {
-            nBoard = rand() % 9;
-         }*/
          boardPrint(atualBoard);
          ++nPlays;
 
@@ -46,27 +42,21 @@ void game(int gameMode, bool resume){
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
          {  
             nBoard = rand() % 9;
-            //printf("while nBoard: %d\n",nBoard);   
          }
 
          nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nPlays);
-         /*while (globalBoard[nBoard / 3][nBoard % 3] != '_' ||  nBoardBefore == nBoard)
-         {
-            nBoard = rand() % 9;
-         }*/
          ++nPlays;
+         
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
+            joga = 2;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,2,playerName);
             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
             completedBoards[iterator] = nBoardBefore; 
             ++iterator;
-            printf("Bot board %d\n",completedBoards[iterator-1]);
-            //joga = 1;
          }
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
          {  
             nBoard = rand() % 9;
-            //printf("while nBoard: %d\n",nBoard);   
          }         
       }while (resWinner == 0 && nPlays < 9*9);
 
@@ -89,9 +79,8 @@ void game(int gameMode, bool resume){
       }
       do{
          boardPrint(atualBoard);
-         globalBoardPrint(globalBoard);
+         //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);  
-         printf("nBoard: %d\n",nBoard);
          /*for(int i = 0; i<itLoad; ++i)
             printf("completedBoards: %d\n",completedBoards[i]);*/
            
@@ -116,11 +105,10 @@ void game(int gameMode, bool resume){
          }else{
             joga=joga%2 + 1;
          }
-         globalBoardPrint(globalBoard);
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         //globalBoardPrint(globalBoard);
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
          {  
             nBoard = rand() % 9;
-            //printf("while nBoard: %d\n",nBoard);   
          }
    }while (resWinner == 0 && nPlays < 9*9); 
 
@@ -140,7 +128,7 @@ void game(int gameMode, bool resume){
 }
 
 int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode, int *completedBoards, int howManyBoards ){
-   int pos,x,y,res,resp,k,resMenu;
+   int pos,x,y,res,resp,k,resMenu,cont=0;
    char posStr[255], respStr[255],kStr[255],posK;
    *nBoardBefore = nBoard;
 
@@ -163,7 +151,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("Plays to see [1-10]: ");
             fgets(kStr,sizeof(kStr),stdin);
             k = atoi(kStr);
-            showKPlays(*plays,k,nPlays);
+            showKPlays(*plays,k,nPlays,&cont);cont=0;
          }
       }
       if(resMenu == 3){
@@ -191,7 +179,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
 
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
   
-   addNodePlays(plays,nBoard,x,y,nPlays);
+   addNodePlays(plays,nBoard,x,y,nPlays,jogador);
    
    if(jogador == 1)
       setPos(board[nBoard].section,x,y,'X');
@@ -216,7 +204,7 @@ int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBe
      
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8 || pos == *section );
 
-   addNodePlays(plays,nBoard,x,y,nPlays);
+   addNodePlays(plays,nBoard,x,y,nPlays,2);
    //showPlays(*plays);
    
    setPos(board[nBoard].section,x,y,'O');
