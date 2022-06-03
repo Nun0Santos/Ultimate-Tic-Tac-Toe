@@ -28,10 +28,10 @@ void game(int gameMode, bool resume){
       do{
          boardPrint(atualBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);   
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
+         /*while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard )
          {
             nBoard = rand() % 9;
-         }
+         }*/
          boardPrint(atualBoard);
          ++nPlays;
 
@@ -43,12 +43,17 @@ void game(int gameMode, bool resume){
             ++iterator;
             printf("Board human Completed %d\n",completedBoards[iterator-1]);
          }
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         {  
+            nBoard = rand() % 9;
+            //printf("while nBoard: %d\n",nBoard);   
+         }
 
          nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nPlays);
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' ||  nBoardBefore == nBoard)
+         /*while (globalBoard[nBoard / 3][nBoard % 3] != '_' ||  nBoardBefore == nBoard)
          {
             nBoard = rand() % 9;
-         }
+         }*/
          ++nPlays;
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,2,playerName);
@@ -57,6 +62,11 @@ void game(int gameMode, bool resume){
             ++iterator;
             printf("Bot board %d\n",completedBoards[iterator-1]);
             //joga = 1;
+         }
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         {  
+            nBoard = rand() % 9;
+            //printf("while nBoard: %d\n",nBoard);   
          }         
       }while (resWinner == 0 && nPlays < 9*9);
 
@@ -79,12 +89,12 @@ void game(int gameMode, bool resume){
       }
       do{
          boardPrint(atualBoard);
-         //globalBoardPrint(globalBoard);
+         globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);  
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' || nBoardBefore == nBoard)
-         {  
-            nBoard = rand() % 9;
-         }
+         printf("nBoard: %d\n",nBoard);
+         /*for(int i = 0; i<itLoad; ++i)
+            printf("completedBoards: %d\n",completedBoards[i]);*/
+           
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){
@@ -105,6 +115,12 @@ void game(int gameMode, bool resume){
             }         
          }else{
             joga=joga%2 + 1;
+         }
+         globalBoardPrint(globalBoard);
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         {  
+            nBoard = rand() % 9;
+            //printf("while nBoard: %d\n",nBoard);   
          }
    }while (resWinner == 0 && nPlays < 9*9); 
 

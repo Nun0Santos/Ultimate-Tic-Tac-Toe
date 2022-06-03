@@ -20,6 +20,7 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
         else{
             fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
             fwrite(&nPlays, sizeof(int),1,fp); //total
+            printf("nPlays (Pause): %d\n",nPlays);
             fwrite(&namePlayers[0], sizeof(namePlayers[0]),1,fp);
             fwrite(&namePlayers[1], sizeof(namePlayers[1]),1,fp);
             fwrite(&joga,sizeof(int),1,fp); //de quem dá pause
@@ -67,7 +68,7 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
    Plays aux;
    FILE *fp;
    int gameMode,total,jogador,nBoardbefore,x=0,O=0;
-
+   int count=0;
    fp = fopen(nameFile, "rb");
    if(fp == NULL){
        perror("Failed to open file\n");
@@ -98,13 +99,12 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
    {
       //printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.nPlays%2 +1);
       addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays);
-      //SE O NUMERO DE JOGADAS FOR IMPAR MUDA A PRIMEIRA JOGADA PARA O JOGADOR 2
       *nBoard = aux.Board;
 
-      if(aux.nPlays%2 + 1 == 1){
+      if(count%2 == 0 ){
          board[*nBoard].section[aux.x][aux.y] = 'X'; 
          if(verifyWinner(board,completedBoards[x])  == 0 ){
-            printf("x\n");
+            printf("x\n"); //Quando os boards que ganhámos são impares dá problemas
             winnerSection(board,completedBoards[x],globalBoard,1,namePlayers);
             x++;
          }
@@ -117,6 +117,7 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
             x++;
          }
       }
+      ++count;
    }
    //showPlays(list);
    fclose(fp);

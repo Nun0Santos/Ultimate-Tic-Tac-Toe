@@ -61,16 +61,17 @@ void removeList(Plays *head){
 void  showKPlays(Plays *plays, int k,int nPlays){
     //Shows contents of connected list
     Plays *aux = plays;
-    int count=1;
+    int count=0;
     puts("\n");
     if(aux == NULL){
         printf("Empty list\n");
     }
     if(nPlays == k || nPlays > k){
         for(int i=0; i<k; ++i){
-            printf("Player %d made the move (%d,%d) on Board [%d]\n",aux->nPlays%2 +1,aux->x,aux->y,aux->Board);
+            printf("Player %d made the move (%d,%d) on Board [%d]\n",count%2 +1,aux->x,aux->y,aux->Board);
             aux = aux->next;  
-        }
+            ++count;
+        }   
     }
     else{
         printf("There are not enough plays\n");
