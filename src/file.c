@@ -27,13 +27,12 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             fwrite(&howManyBoards,sizeof(int),1,fp);
             for(int i = 0; i<howManyBoards; ++i)
                fwrite(&completedBoards[i],sizeof(int),1,fp);
-            printf("howManyBoards: %d\n",howManyBoards);
+            //printf("PAUSE howManyBoards: %d\n",howManyBoards);
             while(aux != NULL){
                fwrite(&aux->x,sizeof(int),1,fp);
                fwrite(&aux->y,sizeof(int),1,fp);
                fwrite(&aux->Board,sizeof(int),1,fp);
                fwrite(&aux->nPlays,sizeof(int),1,fp);
-      
                //printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
                aux = aux->next;
             }
@@ -90,7 +89,7 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
 
    printf("itLoad: %d\n",*itLoad);
    for(int i = 0; i<*itLoad; ++i)
-      printf("CompletedBoards: %d\n",completedBoards[i]);
+      printf("CompletedBoards [%d]: %d\n",i,completedBoards[i]);
 
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
