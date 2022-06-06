@@ -14,6 +14,10 @@ void game(int gameMode, bool resume){
    if(resume == RESUME_GAME){
       plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad,globalBoard);
       nBoard = nBoardBefore;
+      iterator = itLoad;
+      for(int i=0; i<itLoad; ++i)
+         printf("boards load: %d\n",completedBoards[i]);
+
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -81,8 +85,8 @@ void game(int gameMode, bool resume){
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);  
-         /*for(int i = 0; i<itLoad; ++i)
-            printf("completedBoards: %d\n",completedBoards[i]);*/
+         for(int i = 0; i<itLoad; ++i)
+            printf("a seguir ao choose completedBoards: %d\n",completedBoards[i]);
            
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
@@ -92,6 +96,9 @@ void game(int gameMode, bool resume){
             section = nBoardBefore;
             completedBoards[iterator] = section; 
             ++iterator;
+            for(int i=0; i<iterator; ++i)
+               printf("game CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+
 
             if(joga == 1){
                joga = 2;
@@ -160,6 +167,9 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
+            for(int i = 0; i<howManyBoards; ++i)
+               printf("PAUSE CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+            
             pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards);
             endGame(board,*plays);
          }
