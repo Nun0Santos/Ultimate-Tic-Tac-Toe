@@ -11,7 +11,7 @@ void showPlays(Plays *plays){
         printf("Empty list\n");
 
     while (aux != NULL){
-        printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer : %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->player);
+        printf("Node: %d \nx=%d\ty=%d\tBoard: %d\tPlays: %d\tPlayer: %d\n",count++,aux->x,aux->y,aux->Board,aux->nPlays,aux->player);
         aux = aux->next;
     }
 }

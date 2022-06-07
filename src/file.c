@@ -2,10 +2,10 @@
 
 
 void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore,int *completedBoards, int howManyBoards){
-    FILE * fp;
-    int i;
-    plays->nPlays = nPlays;
+    FILE * fp = NULL;
     Plays *aux = plays;
+
+    plays->nPlays = nPlays;
     printf("writing game state to fich.bin...\n");
 
     fp = fopen("fich.bin","wb");
@@ -21,8 +21,8 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
             fwrite(&nPlays, sizeof(int),1,fp); //total
             printf("nPlays (Pause): %d\n",nPlays);
-            fwrite(&namePlayers[0], sizeof(namePlayers[0]),1,fp);
-            fwrite(&namePlayers[1], sizeof(namePlayers[1]),1,fp);
+            fwrite(&namePlayers[0], sizeof(char),255,fp);
+            fwrite(&namePlayers[1], sizeof(char),255,fp);
             fwrite(&joga,sizeof(int),1,fp); //de quem dá pause
             fwrite(&nBoardBefore,sizeof(int),1,fp);
             fwrite(&howManyBoards,sizeof(int),1,fp);
@@ -38,12 +38,12 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
                fwrite(&aux->Board,sizeof(int),1,fp);
                fwrite(&aux->nPlays,sizeof(int),1,fp);
                fwrite(&aux->player,sizeof(int),1,fp);
-               //printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
+               printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
                aux = aux->next;
             }
          }
-     }
-     fclose(fp);  
+      fclose(fp); 
+     } 
 }
 
 void exportFile(Plays *plays, int nPlays){

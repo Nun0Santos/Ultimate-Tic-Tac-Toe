@@ -1,13 +1,13 @@
 #include "game.h"
 
 void game(int gameMode, bool resume){
-   Board *atualBoard;
+   Board *atualBoard = NULL;
    atualBoard = boardsInitializer();
-   char globalBoard[3][3];
+   char globalBoard[3][3] = {"", "", ""};
    Plays *plays = NULL;
-   char playerName[2][255];
-   int joga=1, nPlays=0, won=0, nBoard, nBoardBefore=0, completedBoards[9],iterator=0,itLoad=0,
-       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x,y;
+   char playerName[2][255] = {"", ""};
+   int joga=1, nPlays=0, won=0, nBoard = 0, nBoardBefore=0, completedBoards[9] = {0},iterator=0,itLoad=0,
+       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x = 0,y = 0;
 
    globalBoardInitializer(globalBoard);
 
@@ -57,6 +57,7 @@ void game(int gameMode, bool resume){
             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
             completedBoards[iterator] = nBoardBefore; 
             ++iterator;
+            joga =1;//para ser o jogador 1 a seguir
          }
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
          {  
@@ -131,6 +132,7 @@ void game(int gameMode, bool resume){
    /*removeList(plays); 
    showPlays(plays);*/
    endGame(atualBoard,plays);
+
 
 }
 
@@ -231,5 +233,7 @@ void rules(){
 void endGame(Board *board, Plays *plays){
    removeList(plays);
    freeBoards(board);
+   printf("plays: %lu\n",sizeof(plays));
+   printf("board:%lu\n",sizeof(board));
    exit(0); 
 }

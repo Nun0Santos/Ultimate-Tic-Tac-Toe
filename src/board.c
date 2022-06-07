@@ -291,6 +291,10 @@ void convertPositionBoard(int pos, int *x, int *y){
 
 void freeBoards(Board *board){
     for(int i = 0; i < 9; i++){
+        for (int j = 0; j < 3; j++)
+        {
+            free(board[i].section[j]);
+        }
         free(board[i].section);
     }
     free(board);
