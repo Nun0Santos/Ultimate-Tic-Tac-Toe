@@ -1,6 +1,5 @@
 #include "matdin.h"
 
-
 void libertaMat(char** p, int nLin){
 
     int i;

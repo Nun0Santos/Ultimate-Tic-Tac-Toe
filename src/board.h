@@ -7,16 +7,16 @@ typedef struct Board{
     char **section;
 }Board;
 
-//Todas as funcoes referentes ao tabuleiro
+//All board related functions
 Board *boardsInitializer();
 void globalBoardInitializer(char board[3][3]);
 void boardPrint(Board *board);
 void globalBoardPrint(char board[3][3]);
 int verifyWinner(Board *board, int nBoard);//secção
 int verifyGlobalWinner(char board[3][3]);
-int convertPosition(int position, int *x, int *y);
-int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]); //METE um X ou O na pos 1 1 
-void convertPositionBoard(int pos, int *x, int *y);
+int convertPosition(int position, int *x, int *y);//Play
+int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador, char namePlayers[2][255]); //Mete um X ou O na posição 1 1 do board
+void convertPositionBoard(int pos, int *x, int *y);//board
 void freeBoards(Board *board);
 
 #endif

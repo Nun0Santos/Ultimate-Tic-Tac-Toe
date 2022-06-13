@@ -3,10 +3,8 @@
 
 #include "game.h"
 
-int menu();
+int menu(); //Menu inicial
 void initializer();
-void printFile(char *nameFile);
-int menuGame();
-
+int menuGame(); //Menu do jogador
 
 #endif

@@ -7,8 +7,8 @@ int menu(){
     printf(" __________________________\n");
     printf("|    Choose one option:    |\n");
     printf("|__________________________|\n");
-    printf("|1-Play against person     |\n"
-           "|2-Play against computer   |\n"
+    printf("|1-MultiPlayer             |\n"
+           "|2-SinglePlayer            |\n"
            "|3-Help                    |\n"
            "|4-Exit                    |\n"
            "|__________________________|\n");
@@ -59,7 +59,8 @@ void initializer(){
     bool gameMode;
     char opStr = 'N';
     char loadopt = 'N';
-    FILE *fp;
+    char loadoptStr[255];
+    FILE *fp = NULL;
     Plays *plays = NULL;
     
     //Verify if we have to load the jogo.bin
@@ -69,22 +70,22 @@ void initializer(){
         
         do{
             printf("Option: ");
-            scanf("%c",&loadopt);
+            fgets(loadoptStr,sizeof(loadoptStr) - 1,stdin);
             
-            if( loadopt != 'Y' && loadopt != 'N'){
+            if( loadoptStr[0] != 'Y' && loadoptStr[0] != 'N'){
                 printf("Please enter a valid input: Y(Yes) or N(No)\n");
             }
 
-        }while( loadopt != 'Y' && loadopt != 'N');
+        }while( loadoptStr[0] != 'Y' && loadoptStr[0] != 'N');
 
-        if(loadopt == 'Y'){
+        if(loadoptStr[0] == 'Y'){
             fread(&gameMode,sizeof(bool),1,fp);
             fclose(fp);
 
             if(gameMode == BOT_GAME)
-                game(gameMode,RESUME_GAME); //Computador (Resumir)
+                game(gameMode,RESUME_GAME); //Computador (Resume)
             else
-                game(gameMode,RESUME_GAME); //2 Players (Resumir)
+                game(gameMode,RESUME_GAME); //2 Players (Resume)
         }
         else{//Option == N
          fclose(fp);
@@ -96,7 +97,7 @@ void initializer(){
         op = menu();
 
         do{
-            if(op == 1)//2 jogadores
+            if(op == 1)//Two_Players
                 game(TWO_PLAYERS,NEW_GAME);
             if(op == 2)//Computer
                 game(BOT_GAME,NEW_GAME);

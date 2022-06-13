@@ -20,7 +20,6 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
         else{
             fwrite(&gameMode,sizeof(int),1,fp); // 1-> BotGame 0-> TwoPlayers
             fwrite(&nPlays, sizeof(int),1,fp); //total
-            printf("nPlays (Pause): %d\n",nPlays);
             fwrite(&namePlayers[0], sizeof(char),255,fp);
             fwrite(&namePlayers[1], sizeof(char),255,fp);
             fwrite(&joga,sizeof(int),1,fp); //de quem dá pause
@@ -29,7 +28,7 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             for(int i = 0; i<howManyBoards; ++i)
                fwrite(&completedBoards[i],sizeof(int),1,fp);
             
-             for(int i = 0; i<howManyBoards; ++i)
+            for(int i = 0; i<howManyBoards; ++i)
                printf("FWRITE CompletedBoards [%d]: %d\n",i,completedBoards[i]);
 
             while(aux != NULL){
@@ -38,7 +37,7 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
                fwrite(&aux->Board,sizeof(int),1,fp);
                fwrite(&aux->nPlays,sizeof(int),1,fp);
                fwrite(&aux->player,sizeof(int),1,fp);
-               printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
+               //printf("x:%d\ty:%d\tboard:%d\tPlayer: %d\n",aux->x,aux->y,aux->Board,aux->nPlays%2 +1);
                aux = aux->next;
             }
          }
@@ -47,7 +46,7 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
 }
 
 void exportFile(Plays *plays, int nPlays){
-   FILE *fp;
+   FILE *fp = NULL;
    Plays *aux = plays;
 
    char nameFile[255];
@@ -70,16 +69,17 @@ void exportFile(Plays *plays, int nPlays){
 Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int *itLoad,char globalBoard[3][3]){
    Plays *list = NULL;
    Plays aux;
-   FILE *fp;
+   FILE *fp = NULL;
    int gameMode,total,jogador,nBoardbefore,x=0,O=0;
    int count=0;
+
    fp = fopen(nameFile, "rb");
    if(fp == NULL){
-       perror("Failed to open file\n");
+      perror("Failed to open file\n");
       return NULL;
    }
 
-   fread(&gameMode,sizeof(int),1,fp); //ja estou a ler no fileio
+   fread(&gameMode,sizeof(int),1,fp); 
    fread(&total,sizeof(int),1,fp);
    *nPlays = total;
    fread(&namePlayers[0],sizeof(namePlayers[0]),1,fp);
@@ -92,9 +92,9 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
    for(int i = 0; i<*itLoad; ++i)
       fread(&completedBoards[i],sizeof(int),1,fp);
 
-   printf("itLoad: %d\n",*itLoad);
+   /*printf("itLoad: %d\n",*itLoad);
    for(int i = 0; i<*itLoad; ++i)
-      printf("FREAD CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+      printf("FREAD CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
 
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
@@ -102,14 +102,13 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
       fread(&aux.nPlays,sizeof(int),1,fp) &&
       fread(&aux.player,sizeof(int),1,fp) )
    {
-      printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.player);
+      //printf("x:%d\ty:%d\tboard:%d\tnplays:%d\tjogador:%d\n",aux.x,aux.y,aux.Board,aux.nPlays,aux.player);
       addNodePlays(&list,aux.Board,aux.x,aux.y,aux.nPlays,aux.player);
       *nBoard = aux.Board;
 
-      if(count%2 == 0 ){
+      if(count%2 == 0 ){//Ou aux.player == 1
          board[*nBoard].section[aux.x][aux.y] = 'X'; 
          if(verifyWinner(board,completedBoards[x])  == 0 ){
-            printf("x\n"); //Quando os boards que ganhámos são impares dá problemas
             winnerSection(board,completedBoards[x],globalBoard,1,namePlayers);
             x++;
          }
@@ -117,7 +116,6 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
       else{
          board[*nBoard].section[aux.x][aux.y] = 'O';  
          if(verifyWinner(board,completedBoards[x])  == 0 ){
-            printf("O\n");
             winnerSection(board,completedBoards[x],globalBoard,2,namePlayers);
             x++;
          }

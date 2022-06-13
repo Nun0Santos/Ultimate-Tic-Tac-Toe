@@ -15,6 +15,7 @@ void showPlays(Plays *plays){
         aux = aux->next;
     }
 }
+
 void addNodePlays(Plays **head,int board, int x, int y, int nPlays, int player){
     Plays *aux = *head;
 
@@ -32,7 +33,7 @@ void addNodePlays(Plays **head,int board, int x, int y, int nPlays, int player){
         (*head)->next = NULL;
     }else{
         while(aux->next != NULL){
-            aux = aux->next;// saber a posicao onde alocar
+            aux = aux->next;//Para ir até à última posição da lista
         }
         aux->next = (Plays *)malloc(sizeof(Plays));
         if(aux->next == NULL){
@@ -63,14 +64,14 @@ void removeList(Plays *head){
 void  showKPlays(Plays *plays, int k,int nPlays, int *cont){
     //Shows contents of connected list
     Plays *aux = plays;
-    //int count=0;
-    //puts("\n");
-    if(aux == NULL)return;
+  
+    if(aux == NULL)
+        return;
     
     showKPlays(aux->next,k,nPlays,cont);
     (*cont)++;
 
-    if(k>=*cont){
+    if(k>=*cont && *cont <=10){
         printf("Player %d made the move (%d,%d) on Board [%d]\n",aux->player,aux->x,aux->y,aux->Board);            
        
     }
@@ -83,6 +84,5 @@ void  showKPlays(Plays *plays, int k,int nPlays, int *cont){
     }
     else{
         printf("There are not enough plays\n");
-    }*/
-    
+    }*/  
 }

@@ -15,9 +15,8 @@ void game(int gameMode, bool resume){
       plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad,globalBoard);
       nBoard = nBoardBefore;
       iterator = itLoad;
-      for(int i=0; i<itLoad; ++i)
-         printf("boards load: %d\n",completedBoards[i]);
-
+      /*for(int i=0; i<itLoad; ++i)
+         printf("boards load: %d\n",completedBoards[i]);*/
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -35,23 +34,25 @@ void game(int gameMode, bool resume){
          boardPrint(atualBoard);
          ++nPlays;
 
-         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //human win
+         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //human won
             joga=1;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,1,playerName);
             printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
-            completedBoards[iterator] = nBoardBefore; 
+            completedBoards[iterator] = nBoardBefore; //Para guardar os boards que foram ganhos num array 
             ++iterator;
             printf("Board human Completed %d\n",completedBoards[iterator-1]);
          }
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho o board 6 na pos 6 ele troque de board
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho no board 6 na posição 6 ele troque de board para um aleatório 
          {  
             nBoard = rand() % 9;
          }
+         if(resWinner != 0 )//Se o human ganhar salta fora do while
+            break;
 
          nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nPlays);
          ++nPlays;
          
-         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot win
+         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot won
             joga = 2;
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,2,playerName);
             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
@@ -66,12 +67,13 @@ void game(int gameMode, bool resume){
       }while (resWinner == 0 && nPlays < 9*9);
 
       boardPrint(atualBoard);
+
       if(joga == 1)
          printf("%s won!\n",playerName[0]);
       else
          printf("%s won!\n",playerName[1]);
 
-      exportFile(plays,nPlays);
+      exportFile(plays,nPlays); //Exportação das jogadas para ficheiro de texto
       endGame(atualBoard,plays);
       
    }else{ //TWO_PLAYERS
@@ -86,20 +88,17 @@ void game(int gameMode, bool resume){
          boardPrint(atualBoard);
          //globalBoardPrint(globalBoard);
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);  
-         for(int i = 0; i<itLoad; ++i)
-            printf("a seguir ao choose completedBoards: %d\n",completedBoards[i]);
-           
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
+
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             flagWinnerSection = 1;
             section = nBoardBefore;
             completedBoards[iterator] = section; 
             ++iterator;
-            for(int i=0; i<iterator; ++i)
-               printf("game CompletedBoards [%d]: %d\n",i,completedBoards[i]);
-
+            /*for(int i=0; i<iterator; ++i)
+               printf("game CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
 
             if(joga == 1){
                joga = 2;
@@ -127,18 +126,14 @@ void game(int gameMode, bool resume){
    else
       printf("%s won!\n",playerName[0]);
    }
-   //Exportação para ficheiro
-   exportFile(plays,nPlays);
-   /*removeList(plays); 
-   showPlays(plays);*/
+
+   exportFile(plays,nPlays);//Exportação das jogadas para ficheiro de texto
    endGame(atualBoard,plays);
-
-
 }
 
 int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode, int *completedBoards, int howManyBoards ){
    int pos,x,y,res,resp,k,resMenu,cont=0;
-   char posStr[255], respStr[255],kStr[255],posK;
+   char posStr[255]={" "}, respStr[255]={" "},kStr[255]={" "},posK, *buffer=NULL;
    *nBoardBefore = nBoard;
 
    printf("\nCurrent board: [%d]",nBoard);
@@ -169,9 +164,8 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
-            for(int i = 0; i<howManyBoards; ++i)
-               printf("PAUSE CompletedBoards [%d]: %d\n",i,completedBoards[i]);
-            
+            /*for(int i = 0; i<howManyBoards; ++i)
+               printf("PAUSE CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
             pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards);
             endGame(board,*plays);
          }
@@ -179,16 +173,20 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
       do{
          printf("\nPosition: ");
          fgets(posStr,sizeof(posStr),stdin);
-         pos = atoi(posStr);
+         // pos = atoi(posStr);
+         pos = strtol(posStr,&buffer,10);
+         if(posStr == buffer){
+            printf("Please enter a number\n");
+            continue;
+         }
+         printf("pos: %d\n",pos);
          res = convertPosition(pos, &x,&y);
 
          if(pos < 0 || pos > 8 || board[nBoard].section[x][y] != '_')
             printf("Please enter a valid input\n");
          
       }while(pos < 0 || pos > 8 || board[nBoard].section[x][y] != '_' );
-      
       res = convertPosition(pos, &x,&y);
-
 	}while(board[nBoard].section[x][y] != '_' || res == 1 || pos < 0 || pos > 8);
   
    addNodePlays(plays,nBoard,x,y,nPlays,jogador);
@@ -219,7 +217,7 @@ int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBe
    addNodePlays(plays,nBoard,x,y,nPlays,2);
    //showPlays(*plays);
    
-   setPos(board[nBoard].section,x,y,'O');
+   setPos(board[nBoard].section,x,y,'O'); //Função do professor (alterada)
    *mode = 1;
 
    return pos;
@@ -233,7 +231,5 @@ void rules(){
 void endGame(Board *board, Plays *plays){
    removeList(plays);
    freeBoards(board);
-   printf("plays: %lu\n",sizeof(plays));
-   printf("board:%lu\n",sizeof(board));
-   exit(0); 
+   exit(EXIT_SUCCESS); 
 }

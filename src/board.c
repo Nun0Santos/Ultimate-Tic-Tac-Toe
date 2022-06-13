@@ -3,7 +3,7 @@
 #include "matdin.h"
 
 Board *boardsInitializer(){
-    Board *board;
+    Board *board = NULL;
     
     board = malloc(sizeof(Board) * 9); //Principal
     if(board == NULL){
@@ -14,7 +14,7 @@ Board *boardsInitializer(){
         board[i].section = malloc(sizeof(char *) * 3); //linhas
         if(board[i].section == NULL){
             fprintf(stderr, "Error trying to allocate memory for section of Board [%d]\n",i);
-            //libertar memória que já foi alocada - free
+            //libertar memória que já foi alocada
             for(int j=0; j<i; ++j){
                 freeBoards(board);
             }
@@ -24,7 +24,7 @@ Board *boardsInitializer(){
             board[i].section[j] = malloc(sizeof(char) * 3); //colunas
             if (board[i].section[j] == NULL){
                 fprintf(stderr, "Error trying to allocate memory for section[%d] of Board [%d]\n",j,i);
-                //libertar memória que já foi alocada - free
+                //libertar memória que já foi alocada
                 for(int j=0; j<i; ++j){
                     freeBoards(board);
                 }
@@ -230,7 +230,7 @@ int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador,
             board[nBoard].section[i][j] = ' ';
 
     convertPositionBoard(nBoard,&x,&y);
-    printf("jogador NO WINNERSECTION: %d\n",jogador);
+  
     if(jogador == 1){
         globalBoard[x][y] = 'X';
         board[nBoard].section[1][1] = 'X';
