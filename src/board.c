@@ -138,6 +138,19 @@ int verifyWinner(Board *board, int nBoard)
         if (line==3 || j==3)
             return 0;
     }
+
+    //Empate
+    int count = 0;
+    for(int i=0; i<3; ++i){
+        for(int j=0; j<3; ++j){
+            if(board[nBoard].section[j][i] == '_' ){
+                  ++count;  
+            }
+        }    
+    }
+    if(count == 0){ //está cheio
+       return 1;
+    }
 }
 
 int verifyGlobalWinner(char board[3][3]){
@@ -182,6 +195,19 @@ int verifyGlobalWinner(char board[3][3]){
         if (line==3 || j==3)
             return 0;
     }
+    //Empate
+    int count = 0;
+    for(int i=0; i<3; ++i){
+        for(int j=0; j<3; ++j){
+            if(board[j][i] == '_' ){
+                ++count;  
+            }
+        }    
+    }
+    if(count == 0){ //está cheio
+       return 1;//emapte
+    }
+   
 }
 
 int convertPosition(int position, int *x, int *y){
@@ -241,6 +267,11 @@ int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador,
             return res;
         }
         else{
+            if( (verifyGlobalWinner(globalBoard) ) == 1){//emapte
+            printf("vwinner Section emapte\n");
+                res = 1;
+                return res;
+            }
             res = 0;
             return res;
         }      
@@ -254,8 +285,14 @@ int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador,
             res = 1;
             return res;
         }
-        res = 0;
-        return res;
+        else{
+            if((verifyGlobalWinner(globalBoard) ) == 1){//emapte
+                res = 1;
+                return res;
+            }
+            res = 0;
+            return res;
+        }
     }    
 }
 
@@ -287,6 +324,15 @@ void convertPositionBoard(int pos, int *x, int *y){
     if(pos == 8){
         *x=2;*y=2;
     }
+}
+
+void checkDraw(char globalBoard[3][3], int nBoard){
+    int res,x,y;
+    
+    convertPositionBoard(nBoard,&x,&y);
+    globalBoard[x][y] = '.';            
+    
+    globalBoardPrint(globalBoard);  
 }
 
 void freeBoards(Board *board){

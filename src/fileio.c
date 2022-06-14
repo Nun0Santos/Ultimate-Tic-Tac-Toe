@@ -7,8 +7,8 @@ int menu(){
     printf(" __________________________\n");
     printf("|    Choose one option:    |\n");
     printf("|__________________________|\n");
-    printf("|1-MultiPlayer             |\n"
-           "|2-SinglePlayer            |\n"
+    printf("|1-Multiplayer             |\n"
+           "|2-Singleplayer            |\n"
            "|3-Help                    |\n"
            "|4-Exit                    |\n"
            "|__________________________|\n");
@@ -36,7 +36,7 @@ int menuGame(){
    printf(" ___________________________________\n");
    printf("|        Choose one option:         |\n");
    printf("|___________________________________|\n");
-   printf("|1-Want to see previous plays?      |\n"
+   printf("|1-Previous plays                   |\n"
           "|2-Play                             |\n"
           "|3-Pause                            |\n"); 
    printf("|___________________________________|\n");

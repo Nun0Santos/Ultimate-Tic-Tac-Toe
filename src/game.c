@@ -7,7 +7,7 @@ void game(int gameMode, bool resume){
    Plays *plays = NULL;
    char playerName[2][255] = {"", ""};
    int joga=1, nPlays=0, won=0, nBoard = 0, nBoardBefore=0, completedBoards[9] = {0},iterator=0,itLoad=0,
-       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x = 0,y = 0;
+       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x = 0,y = 0, flagEmpate=0;
 
    globalBoardInitializer(globalBoard);
 
@@ -33,6 +33,7 @@ void game(int gameMode, bool resume){
          nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator);   
          boardPrint(atualBoard);
          ++nPlays;
+         globalBoardPrint(globalBoard);
 
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //human won
             joga=1;
@@ -42,13 +43,23 @@ void game(int gameMode, bool resume){
             ++iterator;
             printf("Board human Completed %d\n",completedBoards[iterator-1]);
          }
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )//Condição para que quando ganho no board 6 na posição 6 ele troque de board para um aleatório 
+         else{
+            if(verifyWinner(atualBoard,nBoardBefore) == 1){
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+               checkDraw(globalBoard,nBoardBefore);
+            }
+            /*if(checkDraw(atualBoard,nBoardBefore,globalBoard,joga,playerName) == 0 ){
+               //EMAPTE
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+            }*/
+         }
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' && verifyGlobalWinner(globalBoard) !=1)//Condição para que quando ganho no board 6 na posição 6 ele troque de board para um aleatório 
          {  
             nBoard = rand() % 9;
          }
          if(resWinner != 0 )//Se o human ganhar salta fora do while
             break;
-
+         
          nBoard=botPlays(atualBoard,&plays,joga,nBoard,&nBoardBefore,&gameMode,&section,nPlays);
          ++nPlays;
          
@@ -60,14 +71,31 @@ void game(int gameMode, bool resume){
             ++iterator;
             joga =1;//para ser o jogador 1 a seguir
          }
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
+         else{
+            if(verifyWinner(atualBoard,nBoardBefore) == 1){
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+               checkDraw(globalBoard,nBoardBefore);
+            }
+            /*if(checkDraw(atualBoard,nBoardBefore,globalBoard,joga,playerName) == 0 ){
+               //EMAPTE
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+            }*/
+         }
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' && verifyGlobalWinner(globalBoard) !=1)
          {  
             nBoard = rand() % 9;
          }         
-      }while (resWinner == 0 && nPlays < 9*9);
+      }while (resWinner == 0 || nPlays < 9*9 );
 
       boardPrint(atualBoard);
+      globalBoardPrint(globalBoard);
 
+      if(verifyGlobalWinner(globalBoard) == 1){
+         printf("Empate!\n");
+         exportFile(plays,nPlays); //Exportação das jogadas para ficheiro de texto
+         endGame(atualBoard,plays);
+      }
+         
       if(joga == 1)
          printf("%s won!\n",playerName[0]);
       else
@@ -91,15 +119,16 @@ void game(int gameMode, bool resume){
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
 
-         if(verifyWinner(atualBoard,nBoardBefore) == 0 ){
+
+         if(verifyWinner(atualBoard,nBoardBefore) == 0){
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
+            printf("resWinner %d\n",resWinner);
             flagWinnerSection = 1;
             section = nBoardBefore;
             completedBoards[iterator] = section; 
             ++iterator;
             /*for(int i=0; i<iterator; ++i)
                printf("game CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
-
             if(joga == 1){
                joga = 2;
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
@@ -108,19 +137,36 @@ void game(int gameMode, bool resume){
                flagPlayerTwo = 2;
                joga = 1;
                printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore); 
-            }         
+            }      
          }else{
+            printf("nBoardBefore: %d\n",nBoardBefore);
+            if(verifyWinner(atualBoard,nBoardBefore) == 1){
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+               checkDraw(globalBoard,nBoardBefore);
+            }
+            /*if(checkDraw(atualBoard,nBoardBefore,globalBoard,joga,playerName) == 0 ){
+               //EMAPTE
+               printf("\nEmapte no board [%d] !\n",nBoardBefore);
+            }*/
             joga=joga%2 + 1;
          }
-         //globalBoardPrint(globalBoard);
-         while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
+         globalBoardPrint(globalBoard);
+         while (globalBoard[nBoard / 3][nBoard % 3] != '_' && verifyGlobalWinner(globalBoard) !=1 )//erro aqui
          {  
             nBoard = rand() % 9;
          }
-   }while (resWinner == 0 && nPlays < 9*9); 
+         printf("resWinner antes do while :%d\n",resWinner);
+      }while (resWinner == 0 ); //|| nPlays < 9*9
 
    boardPrint(atualBoard);
-
+   globalBoardPrint(globalBoard);
+   
+   if(verifyGlobalWinner(globalBoard) == 1){
+      printf("Empate!\n");
+      exportFile(plays,nPlays);//Exportação das jogadas para ficheiro de texto
+      endGame(atualBoard,plays);
+   }
+      
    if(joga == 1 && flagPlayerTwo == 0 )
       printf("%s won!\n",playerName[1]);
    else
@@ -173,9 +219,9 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
       do{
          printf("\nPosition: ");
          fgets(posStr,sizeof(posStr),stdin);
-         // pos = atoi(posStr);
-         pos = strtol(posStr,&buffer,10);
-         if(posStr == buffer){
+         pos = myAtoi(posStr);
+         
+         if(pos == -1){
             printf("Please enter a number\n");
             continue;
          }
@@ -223,9 +269,20 @@ int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBe
    return pos;
 }
 
+int myAtoi(char *str){
+   int res;
+
+   res = atoi(str);
+   if(res == 0){
+      if(str[0] != '0')
+         return -1;
+   }
+   return res;
+}
+
 void rules(){
    printf("test\n");
-   
+      
 }
 
 void endGame(Board *board, Plays *plays){
