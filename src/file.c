@@ -1,7 +1,7 @@
 #include "file.h"
 
 
-void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore,int *completedBoards, int howManyBoards){
+void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore,int *completedBoards, int howManyBoards,int *drawBoards, int indexDraw){
     FILE * fp = NULL;
     Plays *aux = plays;
 
@@ -30,7 +30,14 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
             
             for(int i = 0; i<howManyBoards; ++i)
                printf("FWRITE CompletedBoards [%d]: %d\n",i,completedBoards[i]);
+            
+            fwrite(&indexDraw,sizeof(int),1,fp);
+            for(int i = 0; i<indexDraw; ++i)
+              fwrite(&drawBoards[i],sizeof(int),1,fp);
 
+            for(int i = 0; i<indexDraw; ++i)
+               printf("FWRITE drawBoards [%d]: %d\n",i,drawBoards[i]);
+             
             while(aux != NULL){
                fwrite(&aux->x,sizeof(int),1,fp);
                fwrite(&aux->y,sizeof(int),1,fp);
@@ -48,7 +55,7 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
 void exportFile(Plays *plays, int nPlays){
    FILE *fp = NULL;
    Plays *aux = plays;
-
+  
    char nameFile[255];
 
    printf("Choose file name to save the succession of all plays: ");
@@ -60,17 +67,17 @@ void exportFile(Plays *plays, int nPlays){
    }
    fprintf(fp,"%d\n",nPlays);
    for(int i=0; i<nPlays; ++i){
-      fprintf(fp,"Player %d made the move (%d,%d) on Board [%d]\n",aux->nPlays%2 +1,aux->x,aux->y,aux->Board);
+      fprintf(fp,"Player %d made the move (%d,%d) on Board [%d]\n",aux->player,aux->x,aux->y,aux->Board);
          aux = aux->next;  
    }
    fclose(fp);
 }
 
-Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int *itLoad,char globalBoard[3][3]){
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int *itLoad,char globalBoard[3][3], int *drawBoards, int *indexDraw){
    Plays *list = NULL;
    Plays aux;
    FILE *fp = NULL;
-   int gameMode,total,jogador,nBoardbefore,x=0,O=0;
+   int gameMode,total,jogador,nBoardbefore,x=0,y=0, xWhile=0,O=0;
    int count=0;
 
    fp = fopen(nameFile, "rb");
@@ -92,9 +99,21 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
    for(int i = 0; i<*itLoad; ++i)
       fread(&completedBoards[i],sizeof(int),1,fp);
 
+   fread(indexDraw,sizeof(int),1,fp);
+   for(int i = 0; i<*indexDraw; ++i)
+      fread(&drawBoards[i],sizeof(int),1,fp);
+
    /*printf("itLoad: %d\n",*itLoad);
    for(int i = 0; i<*itLoad; ++i)
       printf("FREAD CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
+   printf("fread INDEx %d\n",*indexDraw);
+
+   for(int i = 0; i<*indexDraw; ++i){
+      printf("FREAD drawBoards [%d]: %d\n",i,drawBoards[i]);
+      convertPosition(drawBoards[i],&x,&y);
+      printf("x:%d\ty:%d\n",x,y);
+      globalBoard[x][y] = '.';
+   }
 
    while(fread(&aux.x,sizeof(int),1,fp) &&
       fread(&aux.y,sizeof(int),1,fp) &&
@@ -108,16 +127,16 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
 
       if(count%2 == 0 ){//Ou aux.player == 1
          board[*nBoard].section[aux.x][aux.y] = 'X'; 
-         if(verifyWinner(board,completedBoards[x])  == 0 ){
-            winnerSection(board,completedBoards[x],globalBoard,1,namePlayers);
-            x++;
+         if(verifyWinner(board,completedBoards[xWhile])  == 0 ){
+            winnerSection(board,completedBoards[xWhile],globalBoard,1,namePlayers);
+            xWhile++;
          }
       }
       else{
          board[*nBoard].section[aux.x][aux.y] = 'O';  
-         if(verifyWinner(board,completedBoards[x])  == 0 ){
-            winnerSection(board,completedBoards[x],globalBoard,2,namePlayers);
-            x++;
+         if(verifyWinner(board,completedBoards[xWhile])  == 0 ){
+            winnerSection(board,completedBoards[xWhile],globalBoard,2,namePlayers);
+            xWhile++;
          }
       }
       ++count;

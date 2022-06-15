@@ -13,7 +13,7 @@
 #define NEW_GAME 0
 
 void game(int gameMode, bool resume);//Função principal
-int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255], int nBoard, int *nBoardBefore, int *mode, int *section,int nPlays, int gameMode,int *completedBoards, int howManyBoards);
+int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255], int nBoard, int *nBoardBefore, int *mode, int *section,int nPlays, int gameMode,int *completedBoards, int howManyBoards, int *drawBoards, int indexDraw);
 int botPlays(Board *board, Plays **plays, int jogador, int nBoard, int *nBoardBefore, int *mode, int *section, int nPlays);
 int myAtoi(char *str); // retorna -1  em caso de erro
 void rules();
