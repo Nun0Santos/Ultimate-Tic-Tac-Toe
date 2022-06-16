@@ -7,7 +7,7 @@ void game(int gameMode, bool resume){
    Plays *plays = NULL;
    char playerName[2][255] = {"", ""};
    int joga=1, nPlays=0, won=0, nBoard = 0, nBoardBefore=0, completedBoards[9] = {0},iterator=0,itLoad=0,
-       resWinner=0, flagPlayerTwo = 0, flagWinnerSection=0, section=-1,x = 0,y = 0, flagEmpate=0, drawBoards[9] = {0}, indexDraw = 0;
+       resWinner=0, flagWinnerSection=0, section=-1,x = 0,y = 0, flagEmpate=0, drawBoards[9] = {0}, indexDraw = 0;
 
    globalBoardInitializer(globalBoard);
 
@@ -130,7 +130,6 @@ void game(int gameMode, bool resume){
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
             }
             else{
-               flagPlayerTwo = 2;
                joga = 1;
                printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore); 
             }      
@@ -164,7 +163,7 @@ void game(int gameMode, bool resume){
       endGame(atualBoard,plays);
    }
       
-   if(plays->player == 1)//joga == 1 && flagPlayerTwo == 0
+   if(plays->player == 1)
       printf("%s won!\n",playerName[0]);
    else
       printf("%s won!\n",playerName[1]);
