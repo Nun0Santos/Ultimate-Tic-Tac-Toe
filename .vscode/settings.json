@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "time.h": "c",
-        "utils.h": "c",
-        "matdin.h": "c",
-        "header.h": "c"
-    }
-}
