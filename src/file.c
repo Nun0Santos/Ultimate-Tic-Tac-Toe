@@ -1,7 +1,7 @@
 #include "file.h"
 
 
-void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore,int *completedBoards, int howManyBoards,int *drawBoards, int indexDraw){
+void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers[2][255],int joga, int nBoardBefore){
     FILE * fp = NULL;
     Plays *aux = plays;
 
@@ -35,8 +35,8 @@ void pause(Board *board,Plays *plays, int nPlays, int gameMode, char namePlayers
                aux = aux->next;
             }
          }
-      fclose(fp); 
-     } 
+         fclose(fp); 
+      } 
 }
 
 void exportFile(Plays *plays, int nPlays){
@@ -52,7 +52,7 @@ void exportFile(Plays *plays, int nPlays){
    if (fp == NULL){
         perror("Failed to save plays to file\n");
    }
-   fprintf(fp,"%d\n",nPlays);
+   fprintf(fp,"Número de jogadas: %d\n",nPlays);
    for(int i=0; i<nPlays; ++i){
       fprintf(fp,"Player %d made the move (%d,%d) on Board [%d]\n",aux->player,aux->x,aux->y,aux->Board);
          aux = aux->next;  
@@ -60,7 +60,7 @@ void exportFile(Plays *plays, int nPlays){
    fclose(fp);
 }
 
-Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,int *completedBoards, int *itLoad,char globalBoard[3][3], int *drawBoards, int *indexDraw){
+Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoard,int *nPlays, int *joga, int *nBoardBefore,char globalBoard[3][3]){
    Plays *list = NULL;
    Plays aux;
    FILE *fp = NULL;
@@ -94,14 +94,14 @@ Plays *loadFich(Board *board,char *nameFile,char namePlayers[2][255], int *nBoar
       *nBoard = aux.Board;
 
       if(count%2 == 0 ){//Ou aux.player == 1
-         board[*nBoard].section[aux.x][aux.y] = 'X'; 
+         board[*nBoard].section[aux.x][aux.y] = 'X'; //Vitória 1
          if(verifyWinner(board,aux.Board)  == 0 ){
             winnerSection(board,aux.Board,globalBoard,1,namePlayers);
             xWhile++;
          }
       }
       else{
-         board[*nBoard].section[aux.x][aux.y] = 'O';  
+         board[*nBoard].section[aux.x][aux.y] = 'O'; //Vitória 2  
          if(verifyWinner(board,aux.Board)  == 0 ){
             winnerSection(board,aux.Board,globalBoard,2,namePlayers);
             xWhile++;

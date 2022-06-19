@@ -5,13 +5,13 @@
 Board *boardsInitializer(){
     Board *board = NULL;
     
-    board = malloc(sizeof(Board) * 9); //Principal
+    board = malloc(sizeof(Board) * 9); //Principal (array com 9 boards)
     if(board == NULL){
        printf("Error trying to allocate memory for global board\n");
        exit(EXIT_FAILURE);
     }
     for(int i = 0; i < 9; ++i){
-        board[i].section = malloc(sizeof(char *) * 3); //linhas
+        board[i].section = malloc(sizeof(char *) * 3); //linhas 
         if(board[i].section == NULL){
             fprintf(stderr, "Error trying to allocate memory for section of Board [%d]\n",i);
             //libertar memória que já foi alocada
@@ -268,7 +268,6 @@ int winnerSection(Board *board, int nBoard, char globalBoard[3][3], int jogador,
         }
         else{
             if( (verifyGlobalWinner(globalBoard) ) == 1){//emapte
-            printf("vwinner Section emapte\n");
                 res = 1;
                 return res;
             }
@@ -332,7 +331,6 @@ void checkDraw(char globalBoard[3][3], int nBoard){
     convertPositionBoard(nBoard,&x,&y);
     globalBoard[x][y] = '.';            
     
-    globalBoardPrint(globalBoard);  
 }
 
 void freeBoards(Board *board){

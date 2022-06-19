@@ -75,14 +75,4 @@ void  showKPlays(Plays *plays, int k,int nPlays, int *cont){
         printf("Player %d made the move (%d,%d) on Board [%d]\n",aux->player,aux->x,aux->y,aux->Board);            
        
     }
-    /*if(nPlays == k || nPlays > k){
-        for(int i=0; i<k; ++i){
-            printf("Player %d made the move (%d,%d) on Board [%d]\n",count%2 +1,aux->x,aux->y,aux->Board);
-            aux = aux->next;  
-            ++count;
-        }   
-    }
-    else{
-        printf("There are not enough plays\n");
-    }*/  
 }

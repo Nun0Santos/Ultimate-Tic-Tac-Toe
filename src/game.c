@@ -6,15 +6,14 @@ void game(int gameMode, bool resume){
    char globalBoard[3][3] = {"", "", ""};
    Plays *plays = NULL;
    char playerName[2][255] = {"", ""};
-   int joga=1, nPlays=0, won=0, nBoard = 0, nBoardBefore=0, completedBoards[9] = {0},iterator=0,itLoad=0,
-       resWinner=0, flagWinnerSection=0, section=-1,x = 0,y = 0, flagEmpate=0, drawBoards[9] = {0}, indexDraw = 0;
+   int joga=1, nPlays=0, won=0, nBoard = 0, nBoardBefore=0,
+       resWinner=0, flagWinnerSection=0, section=-1,x = 0,y = 0;
 
    globalBoardInitializer(globalBoard);
 
    if(resume == RESUME_GAME){
-      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,completedBoards,&itLoad,globalBoard,drawBoards,&indexDraw);
+      plays = loadFich(atualBoard,"fich.bin",playerName,&nBoard,&nPlays,&joga,&nBoardBefore,globalBoard);
       nBoard = nBoardBefore;
-      iterator = itLoad;
    }
    else{
       nBoard = intUniformRnd(0,8);//Iniciar num board aleatório
@@ -28,27 +27,23 @@ void game(int gameMode, bool resume){
       
       do{
          boardPrint(atualBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator,drawBoards,indexDraw);   
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode);   
          boardPrint(atualBoard);
          ++nPlays;
-         globalBoardPrint(globalBoard);
+         //globalBoardPrint(globalBoard);
 
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //human won
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,1,playerName);
             printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
-            completedBoards[iterator] = nBoardBefore; //Para guardar os boards que foram ganhos num array 
-            ++iterator;
+            
          }
          else{
             if(verifyWinner(atualBoard,nBoardBefore) == 1){ //Emapte pelo human
                printf("\nDraw on the board [%d] !\n",nBoardBefore);
                checkDraw(globalBoard,nBoardBefore);
-               resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,1,playerName);
-               drawBoards[indexDraw] = nBoardBefore; //Para guardar os boards que ficaram empatados
-               ++indexDraw;
             }
          }
-         if(resWinner == 1)
+         if(resWinner == 1 || verifyGlobalWinner(globalBoard) == 1) //se ganhar ou se o globalBoard estiver cheio
             break;
 
          joga=2;
@@ -63,19 +58,14 @@ void game(int gameMode, bool resume){
          if(verifyWinner(atualBoard,nBoardBefore) == 0 ){ //bot won
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,2,playerName);
             printf("\n%s won board [%d] !\n",playerName[1],nBoardBefore);
-            completedBoards[iterator] = nBoardBefore;//Para guardar os boards que foram ganhos num array 
-            ++iterator;  
          }
          else{
             if(verifyWinner(atualBoard,nBoardBefore) == 1){ //Empate pelo bot
                printf("\nDraw on the board [%d] !\n",nBoardBefore);
                checkDraw(globalBoard,nBoardBefore);
-               resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,2,playerName);
-               drawBoards[indexDraw] = nBoardBefore; //Para guardar os boards que ficaram empatados
-               ++indexDraw;
             }
          }
-         if(resWinner == 1)
+         if(resWinner == 1 || verifyGlobalWinner(globalBoard) == 1)
             break;
 
          joga = 1;//para ser o jogador 1 a seguir
@@ -94,7 +84,7 @@ void game(int gameMode, bool resume){
          endGame(atualBoard,plays);
       }
 
-      if(joga == 1)//joga == 1
+      if(joga == 1)
          printf("%s won!\n",playerName[0]);
       else
          printf("%s won!\n",playerName[1]);
@@ -112,8 +102,8 @@ void game(int gameMode, bool resume){
       }
       do{
          boardPrint(atualBoard);
-         globalBoardPrint(globalBoard);
-         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode,completedBoards,iterator,drawBoards,indexDraw);  
+         //globalBoardPrint(globalBoard);
+         nBoard=choosePlays(atualBoard,&plays,joga,playerName,nBoard,&nBoardBefore,&gameMode,&section,nPlays,gameMode);  
          convertPositionBoard(nBoard,&x,&y);
          ++nPlays;
 
@@ -121,10 +111,7 @@ void game(int gameMode, bool resume){
             resWinner = winnerSection(atualBoard,nBoardBefore,globalBoard,joga,playerName);
             flagWinnerSection = 1;
             section = nBoardBefore;
-            completedBoards[iterator] = section; //Para guardar os boards que foram ganhos num array 
-            ++iterator;
-            /*for(int i=0; i<iterator; ++i)
-               printf("game CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
+           
             if(joga == 1){
                joga = 2;
                printf("\n%s won board [%d] !\n",playerName[0],nBoardBefore);
@@ -138,13 +125,11 @@ void game(int gameMode, bool resume){
             if(verifyWinner(atualBoard,nBoardBefore) == 1){//verifica empate
                printf("\nDraw on the board [%d] !\n",nBoardBefore);
                checkDraw(globalBoard,nBoardBefore);
-               drawBoards[indexDraw] = nBoardBefore; //Para guardar os boards que ficaram empatados
-               ++indexDraw;
             }
             joga=joga%2 + 1;
          }
 
-         if(resWinner == 1)
+         if(resWinner == 1 || verifyGlobalWinner(globalBoard) == 1) //se ganhar ou se o globalBoard estiver cheio
             break;
          
          while (globalBoard[nBoard / 3][nBoard % 3] != '_' )
@@ -152,7 +137,7 @@ void game(int gameMode, bool resume){
             nBoard = rand() % 9;
          }
       
-      }while (resWinner == 0 && nPlays < 9*9 ); //|| nPlays < 9*9
+      }while (resWinner == 0 && nPlays < 9*9 );
 
    boardPrint(atualBoard);
    //globalBoardPrint(globalBoard);
@@ -163,7 +148,7 @@ void game(int gameMode, bool resume){
       endGame(atualBoard,plays);
    }
       
-   if(plays->player == 1)
+   if(plays->player == 1 && joga == 2) //Preciso do joga == 2 porque estou a trocar essa variavel nos if's
       printf("%s won!\n",playerName[0]);
    else
       printf("%s won!\n",playerName[1]);
@@ -173,9 +158,9 @@ void game(int gameMode, bool resume){
    endGame(atualBoard,plays);
 }
 
-int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode, int *completedBoards, int howManyBoards, int *drawBoards, int indexDraw){
+int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255],  int nBoard,int *nBoardBefore, int *mode, int *section, int nPlays, int gameMode){
    int pos,x,y,res,resp,k,resMenu,cont=0;
-   char posStr[255]={" "}, respStr[255]={" "},kStr[255]={" "},posK, *buffer=NULL;
+   char posStr[255]={" "}, respStr[255]={" "},kStr[255]={" "}, *buffer=NULL;
    *nBoardBefore = nBoard;
 
    printf("\nCurrent board: [%d]",nBoard);
@@ -206,9 +191,7 @@ int choosePlays(Board *board, Plays **plays, int jogador,char namePlayers[2][255
             printf("There are no plays to save, please make a play\n");
          }
          else{
-            /*for(int i = 0; i<howManyBoards; ++i)
-               printf("PAUSE CompletedBoards [%d]: %d\n",i,completedBoards[i]);*/
-            pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore,completedBoards,howManyBoards,drawBoards,indexDraw);
+            pause(board,*plays,nPlays,gameMode,namePlayers,jogador,*nBoardBefore);
             endGame(board,*plays);
          }
       }
@@ -276,8 +259,51 @@ int myAtoi(char *str){
 }
 
 void rules(){
-   printf("test\n");
-      
+   char opt[255];
+
+   printf("\n\n");
+   printf("----------- Regras Ultimate Tic-Tac-Toe  -----------\n\n");
+   printf("Cada número corresponde a uma posição\n");
+
+   printf("\n\n    C0       C1        C2");
+   printf("\n  +----------+---------+---------+\n");
+   printf("  | 0  1  2  | _  _  _ | _  _  _ |\n");
+   printf("L0| 3  4  5  | _  _  _ | _  _  _ |\n"); 
+   printf("  | 6  7  8  | _  _  _ | _  _  _ |\n"); 
+   printf("  |----------+---------+---------|\n");
+   printf("  | _  _  _  | _  _  _ | _  _  _ |\n");
+   printf("L1| _  _  _  | _  _  _ | _  _  _ |\n"); 
+   printf("  | _  _  _  | _  _  _ | _  _  _ |\n"); 
+   printf("  |----------+---------+---------|\n");
+   printf("  | _  _  _  | _  _  _ | _  _  _ |\n");
+   printf("L2| _  _  _  | _  _  _ | _  _  _ |\n"); 
+   printf("  | _  _  _  | _  _  _ | _  _  _ |\n"); 
+   printf("  +----------+---------+---------+\n");
+
+   printf("\n\nObjetivo:\n"
+          "\t- Ser o primeiro a construir linha/coluna/diagonal com 3 peças iguais\n\n");
+   
+   printf("Regras:\n"
+           "\t- Os dois jogadores colocam, alternadamente, as suas peças de forma a construirem uma linha/coluna/diagonal\n" 
+            "\t  com 3 peças iguais em 9 tabuleiros de 3 x 3\n\n"
+           "\t- O jogador deve jogar tendo em conta as seguintes propriedades:\n"
+           "\t\t- Ganhar completando a linha/coluna/diagonal;\n"
+           "\t\t- Bloquer para impedir que o adeversáro complete a sua linha/coluna/diagonal;\n"
+           "\t\t- Fazer jogadas tendo em consideração que o tabuleiro seguinte a jogar será decidido pela jogada atual.\n\n\n");
+
+   do{
+      printf("Do you want to start playing? (Y/N)\n");
+      fgets(opt,sizeof(opt)-1,stdin);
+
+      if( opt[0] != 'Y' && opt[0] != 'N'){
+          printf("Please enter a valid input: Y(Yes) or N(No)\n");
+      }
+   }while( opt[0] != 'Y' && opt[0] != 'N');
+   
+   if( opt[0] == 'Y' )
+      initializer();
+
+   exit(EXIT_SUCCESS);
 }
 
 void endGame(Board *board, Plays *plays){

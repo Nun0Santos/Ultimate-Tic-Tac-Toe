@@ -83,9 +83,9 @@ void initializer(){
             fclose(fp);
 
             if(gameMode == BOT_GAME)
-                game(gameMode,RESUME_GAME); //Computador (Resume)
+                game(gameMode,RESUME_GAME); //Computer (Resume)
             else
-                game(gameMode,RESUME_GAME); //2 Players (Resume)
+                game(gameMode,RESUME_GAME); //Two Players (Resume)
         }
         else{//Option == N
          fclose(fp);
