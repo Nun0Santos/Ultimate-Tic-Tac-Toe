@@ -1,7 +1,0 @@
-
-Compilar:
-	-Necessário estár na mesma pasta onde se encontra o Makefile (na pasta Ultimate-Tic-Tac-Toe)
-	
-
-Executar:
-	./game (na pasta Ultimate-Tic-Tac-Toe)
